@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김현권 - 시스템엔지니어 경력기술서</title>
     <style>
+        /* 추가 */
+        #srv-mini { position:absolute; top:12px; right:12px; width:300px; height:140px; z-index:3; }
+        @media (max-width: 980px){ #srv-mini { position:static; width:100%; height:180px; margin:10px 0; } }
+
         * {
             margin: 0;
             padding: 0;
@@ -463,6 +467,43 @@
                     <div class="contact-item email">sidml123@naver.com</div>
                 </div>
             </div>
+            <!-- 추가 -->
+            <div id="srv-mini"></div>
+            <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+            <script>
+            (async function(){
+            const el = document.getElementById('srv-mini');
+            const c = echarts.init(el);
+            c.setOption({
+                grid:{left:30,right:8,top:18,bottom:20,containLabel:true},
+                tooltip:{trigger:'axis'},
+                legend:{data:['CPU','MEM','DISK']},
+                xAxis:{type:'category',data:[]},
+                yAxis:{type:'value',min:0,max:100},
+                series:[
+                {name:'CPU', type:'line', symbol:'none', areaStyle:{opacity:.28}, data:[]},
+                {name:'MEM', type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]},
+                {name:'DISK',type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]}
+                ],
+                animation:false
+            });
+
+            async function reload(){
+                try{
+                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                const lines = raw.trim().split('\n').filter(Boolean).map(x=>JSON.parse(x));
+                const keep = 120; // 최근 120포인트만(분단위라면 2시간)
+                const arr = lines.slice(-keep);
+                const labels = arr.map(d => new Date(d.ts).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}));
+                const cpu = arr.map(d => d.cpu||0), mem = arr.map(d => d.mem||0), disk = arr.map(d => d.disk||0);
+                c.setOption({ xAxis:{data:labels}, series:[{data:cpu},{data:mem},{data:disk}] });
+                }catch(e){ /* 첫 배포 직후 파일 없을 수 있음 */ }
+            }
+            await reload();
+            setInterval(reload, 30000); // 30초마다 새 파일 당겨오기(커밋 있을 때만 바뀜)
+            addEventListener('resize', ()=>c.resize());
+            })();
+            </script>
         </header>
 
         <!-- Summary Section -->
