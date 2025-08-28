@@ -454,6 +454,20 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* 추가 서버 상태 배지 08/28 */
+        .status-badge{
+        position:absolute; top:12px; right:320px; 
+        background: rgba(0,0,0,.25); color:#fff; 
+        padding:8px 12px; border-radius:10px; 
+        font-weight:700; backdrop-filter: blur(4px);
+        }
+        .status-ok{ background: rgba(16,185,129,.85); }   /* ☀️  */
+        .status-warn{ background: rgba(245,158,11,.85); } /* ☁️  */
+        .status-bad{ background: rgba(239,68,68,.85); }   /* 🌧️ */
+        @media (max-width:980px){
+        .status-badge{ position:static; display:inline-block; margin:8px 0 0 0; }
+        }
+
     </style>
 </head>
 <body>
@@ -473,40 +487,80 @@
             </div>
             <!-- 추가 -->
             <div id="srv-mini"></div>
+            <!-- 추가 cpu 상태체크 08/28 -->
+            <div id="srv-status" class="status-badge">--</div> 
+
             <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
             <script>
             (async function(){
-            const el = document.getElementById('srv-mini');
-            const c = echarts.init(el);
-            c.setOption({
-                grid:{left:30,right:8,top:18,bottom:20,containLabel:true},
-                tooltip:{trigger:'axis'},
-                legend:{data:['CPU','MEM','DISK']},
-                xAxis:{type:'category',data:[]},
-                yAxis:{type:'value',min:0,max:100},
-                series:[
-                {name:'CPU', type:'line', symbol:'none', areaStyle:{opacity:.28}, data:[]},
-                {name:'MEM', type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]},
-                {name:'DISK',type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]}
-                ],
-                animation:false
-            });
+                const el = document.getElementById('srv-mini');
+                const c = echarts.init(el);
+                const badge = document.getElementById('srv-status');
 
-            async function reload(){
-                try{
-                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
-                const lines = raw.trim().split('\n').filter(Boolean).map(x=>JSON.parse(x));
-                const keep = 120; // 최근 120포인트만(분단위라면 2시간)
-                const arr = lines.slice(-keep);
-                const labels = arr.map(d => new Date(d.ts).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}));
-                const cpu = arr.map(d => d.cpu||0), mem = arr.map(d => d.mem||0), disk = arr.map(d => d.disk||0);
-                c.setOption({ xAxis:{data:labels}, series:[{data:cpu},{data:mem},{data:disk}] });
-                }catch(e){ /* 첫 배포 직후 파일 없을 수 있음 */ }
-            }
-            await reload();
-            setInterval(reload, 30000); // 30초마다 새 파일 당겨오기(커밋 있을 때만 바뀜)
-            addEventListener('resize', ()=>c.resize());
-            })();
+                c.setOption({
+                    grid:{left:30,right:8,top:18,bottom:20,containLabel:true},
+                    tooltip:{trigger:'axis'},
+                    legend:{data:['CPU','MEM','DISK']},
+                    xAxis:{type:'category',data:[]},
+                    yAxis:{type:'value',min:0,max:100},
+                    series:[
+                    {name:'CPU', type:'line', symbol:'none', areaStyle:{opacity:.28}, data:[]},
+                    {name:'MEM', type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]},
+                    {name:'DISK',type:'line', symbol:'none', areaStyle:{opacity:.22}, data:[]}
+                    ],
+                    animation:false
+                });
+
+                function classify(v){
+                    // v: 0~100 (percent)
+                    // 기준: CPU<60 & MEM<70 & DISK<80 => OK
+                    // 어느 하나라도 Warn 구간 넘으면 WARN, Bad 구간 넘으면 BAD
+                    if (v.cpu < 60 && v.mem < 70 && v.disk < 80) return 'ok';
+                    if (v.cpu >= 85 || v.mem >= 90 || v.disk >= 95) return 'bad';
+                    return 'warn';
+                }
+                function renderBadge(v){
+                    const cls = classify(v);
+                    const icon = cls==='ok'?'☀️':(cls==='warn'?'☁️':'🌧️');
+                    const text = cls==='ok'?'정상':(cls==='warn'?'주의':'위험');
+                    badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
+                    badge.textContent = `${icon} ${text}  |  CPU ${v.cpu}% · MEM ${v.mem}% · DISK ${v.disk}%`;
+                }
+
+                async function reload(){
+                    try{
+                    const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                    const lines = raw.trim().split('\n').filter(Boolean).map(x=>JSON.parse(x));
+
+                    const keep = 120; // 최근 120 포인트만
+                    const arr = lines.slice(-keep);
+
+                    const labels = arr.map(d => new Date(d.ts).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}));
+                    const cpu = arr.map(d => d.cpu||0), mem = arr.map(d => d.mem||0), disk = arr.map(d => d.disk||0);
+
+                    c.setOption({ xAxis:{data:labels}, series:[{data:cpu},{data:mem},{data:disk}] });
+
+                    // 최근 값(마지막 포인트) 기준 상태
+                    if (arr.length){
+                        const last = arr[arr.length-1];
+                        const snapshot = {
+                        cpu: Math.round(last.cpu||0),
+                        mem: Math.round(last.mem||0),
+                        disk: Math.round(last.disk||0)
+                        };
+                        renderBadge(snapshot);
+                    }
+                    }catch(e){
+                    // 첫 배포 직후 파일 없을 수 있음
+                    badge.className = 'status-badge';
+                    badge.textContent = '데이터 없음';
+                    }
+                }
+
+                await reload();
+                setInterval(reload, 30000);
+                addEventListener('resize', ()=>c.resize());
+                })();
             </script>
         </header>
 
