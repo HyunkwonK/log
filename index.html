@@ -454,6 +454,20 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* 추가 서버 상태 배지 08/28 */
+        .status-badge{
+        position:absolute; top:12px; right:320px; 
+        background: rgba(0,0,0,.25); color:#fff; 
+        padding:8px 12px; border-radius:10px; 
+        font-weight:700; backdrop-filter: blur(4px);
+        }
+        .status-ok{ background: rgba(16,185,129,.85); }   /* ☀️  */
+        .status-warn{ background: rgba(245,158,11,.85); } /* ☁️  */
+        .status-bad{ background: rgba(239,68,68,.85); }   /* 🌧️ */
+        @media (max-width:980px){
+        .status-badge{ position:static; display:inline-block; margin:8px 0 0 0; }
+        }
+
     </style>
 </head>
 <body>
@@ -603,7 +617,6 @@
         </section>
 
         <!-- Tech Stack Section -->
-        
         <section class="tech-stack">
             <h2 class="section-title">Tech Stack</h2>
             <div class="tech-grid">
