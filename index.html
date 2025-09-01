@@ -722,8 +722,8 @@
                         // 차트 리사이즈
                         c.resize();
                         
-                        // 반응형 복원 처리
-                        const isMobile = window.innerWidth <= 980;
+                        // 브레이크포인트를 1200px로 변경하여 반응형 복원 처리
+                        const isMobile = window.innerWidth <= 1200;
                         const srvMini = document.getElementById('srv-mini');
                         const badge = document.getElementById('srv-status');
                         
@@ -741,6 +741,16 @@
                             badge.style.right = '50px';
                             badge.style.margin = '0';
                             badge.style.display = 'block';
+                        } else {
+                            // 모바일에서는 static 위치로 설정
+                            srvMini.style.position = 'static';
+                            srvMini.style.width = '100%';
+                            srvMini.style.height = '130px';
+                            srvMini.style.margin = '15px 0 0 0';
+                            
+                            badge.style.position = 'static';
+                            badge.style.display = 'inline-block';
+                            badge.style.margin = '0 0 10px 0';
                         }
                     }, 100);
                 });
