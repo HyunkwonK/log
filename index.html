@@ -554,216 +554,247 @@
 </head>
 <body>
     <div class="container">
+        
         <!-- Header Section -->
         <header class="header">
-            <div class="header-content">
-                <h1 class="name">김현권</h1>
-                <div class="title">System Engineer · 3년차</div>
-                <div class="contact-info">
-                    <div class="contact-item phone">010-5009-0595</div>
-                    <div class="contact-item email">sidml123@naver.com</div>
-                    <div class="contact-item blog">
-                       <a href="https://myit.tistory.com" target="_blank" rel="noopener" style="color:white; text-decoration:none;">IT Blog</a>
-                    </div>
-                </div>
+        <style>
+            /* ======== 헤더 전용 스타일(중복 제거/정리) ======== */
+            #srv-mini {
+            position: absolute;
+            top: 80px;           /* 이름 아래 */
+            right: 50px;
+            width: 250px;
+            height: 110px;
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;     /* 클릭 가능 표시 */
+            }
+
+            .status-badge {
+            position: absolute;
+            top: 40px;           /* 그래프 위, 이름 오른쪽 */
+            right: 50px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 18px;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.75em;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            cursor: pointer;     /* 클릭 가능 표시 */
+            }
+            .status-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            }
+            .status-ok  { background: linear-gradient(135deg, rgba(16,185,129,0.7), rgba(5,150,105,0.7));  border-color: rgba(16,185,129,0.25); }
+            .status-warn{ background: linear-gradient(135deg, rgba(245,158,11,0.7), rgba(217,119,6,0.7));  border-color: rgba(245,158,11,0.25); }
+            .status-bad { background: linear-gradient(135deg, rgba(239,68,68,0.7),  rgba(220,38,38,0.7));  border-color: rgba(239,68,68,0.25); }
+
+            /* 헤더 콘텐츠가 차트와 겹치지 않도록 오른쪽 여유 */
+            .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: calc(100% - 320px); /* 차트 공간 확보 */
+            }
+
+            /* 모바일(<=980px)에서는 세로 스택 */
+            @media (max-width: 980px) {
+            #srv-mini {
+                position: static;
+                width: 100%;
+                height: 130px;
+                margin: 15px 0 0 0;
+            }
+            .status-badge {
+                position: static;
+                display: inline-block;
+                margin: 0 0 10px 0;
+                width: fit-content;
+            }
+            .header-content { max-width: 100%; }
+            }
+
+            .chart-mini-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.7em;
+            font-weight: 500;
+            margin-bottom: 2px;
+            text-align: center;
+            }
+        </style>
+
+        <div class="header-content">
+            <h1 class="name">김현권</h1>
+            <div class="title">System Engineer · 3년차</div>
+            <div class="contact-info">
+            <div class="contact-item phone">010-5009-0595</div>
+            <div class="contact-item email">sidml123@naver.com</div>
+            <div class="contact-item blog">
+                <a href="https://myit.tistory.com" target="_blank" rel="noopener" style="color:white; text-decoration:none;">IT Blog</a>
             </div>
-            <!-- 추가 -->
-            <!-- <div id="srv-mini"></div>-->
-            <div id="srv-mini">
-                <div class="chart-mini-title">Server Monitor</div>
             </div>
-            <!-- 추가 cpu 상태체크 08/28 -->
-            <div id="srv-status" class="status-badge">--</div> 
+        </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
-            <script>
-                (async function(){
-                const el = document.getElementById('srv-mini');
-                const c = echarts.init(el);
-                const badge = document.getElementById('srv-status');
+        <div id="srv-mini">
+            <div class="chart-mini-title">Server Monitor</div>
+        </div>
+        <div id="srv-status" class="status-badge">--</div>
 
-                c.setOption({
-                    backgroundColor: 'transparent',
-                    grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
-                    tooltip: { 
-                        trigger: 'axis',
-                        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                        borderColor: 'rgba(255, 255, 255, 0.2)',
-                        textStyle: { color: '#fff', fontSize: 11 }
-                    },
-                    legend: { 
-                        data: ['CPU', 'MEM', 'DISK'],
-                        textStyle: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 9 },
-                        top: 2,
-                        itemWidth: 12,
-                        itemHeight: 8
-                    },
-                    xAxis: { 
-                        type: 'category', 
-                        data: [],
-                        axisLabel: { show: false },
-                        axisLine: { show: false },
-                        axisTick: { show: false },
-                        splitLine: { show: false }
-                    },
-                    yAxis: { 
-                        type: 'value', 
-                        min: 0, 
-                        max: 100,
-                        axisLabel: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 9 },
-                        axisLine: { show: false },
-                        axisTick: { show: false },
-                        splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.08)' } }
-                    },
-                    series: [
-                        { 
-                            name: 'CPU', 
-                            type: 'line', 
-                            symbol: 'none', 
-                            lineStyle: { width: 1.5, color: '#10b981' },
-                            areaStyle: { opacity: 0.25, color: 'rgba(16, 185, 129, 0.25)' }, 
-                            data: [] 
-                        },
-                        { 
-                            name: 'MEM', 
-                            type: 'line', 
-                            symbol: 'none', 
-                            lineStyle: { width: 1.5, color: '#3b82f6' },
-                            areaStyle: { opacity: 0.2, color: 'rgba(59, 130, 246, 0.2)' }, 
-                            data: [] 
-                        },
-                        { 
-                            name: 'DISK', 
-                            type: 'line', 
-                            symbol: 'none', 
-                            lineStyle: { width: 1.5, color: '#f59e0b' },
-                            areaStyle: { opacity: 0.15, color: 'rgba(245, 158, 11, 0.15)' }, 
-                            data: [] 
-                        }
-                    ],
-                    animation: false
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+        <script>
+            (async function () {
+            const el    = document.getElementById('srv-mini');
+            const badge = document.getElementById('srv-status');
+            const c     = echarts.init(el);
+
+            /* === 1) 대시보드 링크: 초기화 시 1회만 등록 === */
+            const TARGET_URL = 'http://3.219.205.4:7070/health/dashboard';
+            function openDashboard() {
+                window.open(TARGET_URL, '_blank', 'noopener,noreferrer');
+            }
+            // 배지 접근성/클릭
+            badge.setAttribute('title', '대시보드 열기');
+            badge.setAttribute('role',  'button');
+            badge.setAttribute('tabindex', '0');
+            badge.addEventListener('click', openDashboard);
+            badge.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDashboard(); }
+            });
+            // 차트(캔버스) 클릭
+            c.getZr().on('click', openDashboard);
+
+            /* === 2) 차트 옵션 === */
+            c.setOption({
+                backgroundColor: 'transparent',
+                grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
+                tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                textStyle: { color: '#fff', fontSize: 11 }
+                },
+                legend: {
+                data: ['CPU', 'MEM', 'DISK'],
+                textStyle: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 9 },
+                top: 2, itemWidth: 12, itemHeight: 8
+                },
+                xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
+                yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.08)' } } },
+                series: [
+                { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:0.25, color:'rgba(16,185,129,0.25)' }, data:[] },
+                { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:0.2,  color:'rgba(59,130,246,0.2)' }, data:[] },
+                { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:0.15, color:'rgba(245,158,11,0.15)' }, data:[] }
+                ],
+                animation: false
+            });
+
+            /* === 3) 데이터 로딩 === */
+            function toPct(v){ if(v==null||isNaN(v))return 0; return v<=1?Math.round(v*100):Math.round(v); }
+            function classify(v){
+                if (v.cpu<60 && v.mem<70 && v.disk<80) return 'ok';
+                if (v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad';
+                return 'warn';
+            }
+            function renderBadge(v){
+                const cls  = classify(v);
+                const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
+                const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
+                badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
+                badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
+            }
+
+            async function reload(){
+                try{
+                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                const lines  = raw.trim() ? raw.trim().split('\n') : [];
+                const parsed = [];
+                for (const ln of lines){ try { parsed.push(JSON.parse(ln)); } catch(_){} }
+                if (!parsed.length){ badge.className='status-badge'; badge.textContent='데이터 없음'; return; }
+
+                const keep = 120;
+                const arr  = parsed.slice(-keep);
+
+                const labels = arr.map(d => {
+                    const t = d.ts ? new Date(d.ts) : null;
+                    return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '';
                 });
+                const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
+                const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
+                const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
 
-                function toPct(v){ if(v==null||isNaN(v))return 0; return v<=1?Math.round(v*100):Math.round(v); }
-                function classify(v){
-                    if (v.cpu<60 && v.mem<70 && v.disk<80) return 'ok';
-                    if (v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad';
-                    return 'warn';
+                c.setOption({ xAxis:{data:labels}, series:[{data:cpuArr},{data:memArr},{data:diskArr}] });
+
+                const last = {
+                    cpu:  cpuArr.length?  cpuArr[cpuArr.length-1]  : 0,
+                    mem:  memArr.length?  memArr[memArr.length-1]  : 0,
+                    disk: diskArr.length? diskArr[diskArr.length-1] : 0
+                };
+                renderBadge(last);
+                }catch(e){
+                badge.className = 'status-badge';
+                badge.textContent = '데이터 로드 실패';
                 }
-                function renderBadge(v){
-                    const cls = classify(v);
-                    const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
-                    const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
-                    badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
-                    badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
+            }
+
+            await reload();
+            setInterval(reload, 30000);
+
+            /* === 4) 레이아웃 적용: 첫 진입 + 리사이즈 === */
+            function applyLayout() {
+                // 차트 컨테이너 크기에 맞춰 리사이즈
+                c.resize();
+
+                const isMobile = window.innerWidth <= 1200;   // 같은 기준 유지
+                const srvMini  = document.getElementById('srv-mini');
+
+                if (!isMobile) {
+                srvMini.style.position = 'absolute';
+                srvMini.style.top = '80px';
+                srvMini.style.right = '50px';
+                srvMini.style.width = '250px';
+                srvMini.style.height = '110px';
+                srvMini.style.margin = '0';
+
+                badge.style.position = 'absolute';
+                badge.style.top = '40px';
+                badge.style.right = '50px';
+                badge.style.margin = '0';
+                badge.style.display = 'block';
+                } else {
+                srvMini.style.position = 'static';
+                srvMini.style.width = '100%';
+                srvMini.style.height = '130px';
+                srvMini.style.margin = '15px 0 0 0';
+
+                badge.style.position = 'static';
+                badge.style.display = 'inline-block';
+                badge.style.margin = '0 0 10px 0';
                 }
-                async function reload(){
-                    try{
-                    const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
-                    const lines = raw.trim() ? raw.trim().split('\n') : [];
+            }
 
-                    // 라인별 안전 파싱
-                    const parsed = [];
-                    for (const ln of lines){
-                        try { parsed.push(JSON.parse(ln)); } catch(_) { /* 깨진 라인 skip */ }
-                    }
-                    if (!parsed.length){
-                        badge.className = 'status-badge';
-                        badge.textContent = '데이터 없음';
-                        return;
-                    }
+            // ✅ 첫 진입에서도 즉시 적용 (겹침 방지)
+            applyLayout();
 
-                    const keep = 120;
-                    const arr = parsed.slice(-keep);
-
-                    // ts가 없거나 깨진 경우도 방어
-                    const labels = arr.map(d => {
-                        const t = d.ts ? new Date(d.ts) : null;
-                        return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '';
-                    });
-
-                    const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
-                    const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
-                    const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
-
-                    c.setOption({ xAxis:{data:labels}, series:[{data:cpuArr},{data:memArr},{data:diskArr}] });
-
-                    const last = {
-                        cpu:  cpuArr.length? cpuArr[cpuArr.length-1] : 0,
-                        mem:  memArr.length? memArr[memArr.length-1] : 0,
-                        disk: diskArr.length? diskArr[diskArr.length-1]: 0
-                    };
-                    renderBadge(last);
-                    }catch(e){
-                    badge.className = 'status-badge';
-                    badge.textContent = '데이터 로드 실패';
-                    }
-                }
-
-                await reload();
-                setInterval(reload, 30000);
-
-                // 반응형 복원 문제 해결을 위한 개선된 resize 이벤트
-                let resizeTimer;
-                addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        // 차트 리사이즈
-                        c.resize();
-                        
-                        // 브레이크포인트를 1200px로 변경하여 반응형 복원 처리
-                        const isMobile = window.innerWidth <= 1200;
-                        const srvMini = document.getElementById('srv-mini');
-                        const badge = document.getElementById('srv-status');
-                        // 대시보드 링크
-                        const TARGET_URL = 'http://3.219.205.4:7070/health/dashboard';
-
-                        // 배지 클릭 → 새 탭 오픈
-                        badge.setAttribute('title', '대시보드 열기');
-                        badge.setAttribute('role', 'button');
-                        badge.setAttribute('tabindex', '0');
-                        function openDashboard() {
-                        window.open(TARGET_URL, '_blank', 'noopener,noreferrer');
-                        }
-                        badge.addEventListener('click', openDashboard);
-                        badge.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDashboard(); }
-                        });
-
-                        // 그래프 영역 클릭 → 새 탭 오픈 (ECharts 캔버스 위에서 동작하도록 ZRender 사용)
-                        c.getZr().on('click', openDashboard);
-
-                        if (!isMobile) {
-                            // 데스크톱으로 복원시 원래 위치로 강제 이동
-                            srvMini.style.position = 'absolute';
-                            srvMini.style.top = '80px';  /* 차트 위치 복원 */
-                            srvMini.style.right = '50px';
-                            srvMini.style.width = '250px'; /* 차트 크기 복원 */
-                            srvMini.style.height = '110px';
-                            srvMini.style.margin = '0';
-                            
-                            badge.style.position = 'absolute';
-                            badge.style.top = '40px';  /* 배지 위치 복원 */
-                            badge.style.right = '50px';
-                            badge.style.margin = '0';
-                            badge.style.display = 'block';
-                        } else {
-                            // 모바일에서는 static 위치로 설정
-                            srvMini.style.position = 'static';
-                            srvMini.style.width = '100%';
-                            srvMini.style.height = '130px';
-                            srvMini.style.margin = '15px 0 0 0';
-                            
-                            badge.style.position = 'static';
-                            badge.style.display = 'inline-block';
-                            badge.style.margin = '0 0 10px 0';
-                        }
-                    }, 100);
-                });
-                })();
-            </script>
-
+            // 디바운스 리사이즈
+            let resizeTimer;
+            addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(applyLayout, 100);
+            });
+            })();
+        </script>
         </header>
+
 
         <!-- Summary Section -->
         <section class="summary">
