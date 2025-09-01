@@ -474,8 +474,6 @@
             /* 추가 */
             transition: transform .2s ease, box-shadow .2s ease;
             will-change: transform, box-shadow;
-
-            z-index: 2;
             
         }
         #srv-mini:hover {
@@ -693,12 +691,31 @@
             c.setOption({
                 backgroundColor: 'transparent',
                 grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
-                tooltip: {
-                trigger: 'axis',
-                backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-                textStyle: { color: '#fff', fontSize: 11 }
-                },
+                tooltip: { 
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    textStyle: { color: '#fff', fontSize: 11 },
+
+                    // ▼ 배지 위로 띄우기
+                    appendToBody: true,
+                    extraCssText: 'z-index:2147483647; pointer-events:none;',
+
+                    // ▼ 배지(오른쪽 위) 근처면 살짝 옮겨서 겹침 최소화
+                    position: function (pos, params, dom, rect, size) {
+                        const [x, y] = pos;
+                        const viewW  = size.viewSize[0];
+                        const tipW   = size.contentSize[0];
+                        const tipH   = size.contentSize[1];
+
+                        // 배지 대략 영역: 화면 오른쪽 320px 이내 & 상단 140px 이내
+                        const nearBadge = (viewW - x < 320) && (y < 140);
+                        if (nearBadge) {
+                        return [x - tipW - 12, y + 12]; // 마우스 왼쪽/아래로 이동
+                        }
+                        return [x + 12, y + 12]; // 기본 위치(마우스 오른쪽/아래)
+                    }
+                    },
                 legend: {
                 data: ['CPU', 'MEM', 'DISK'],
                 textStyle: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 9 },
