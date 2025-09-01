@@ -467,6 +467,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
 
 
@@ -486,6 +487,13 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 */
+            cursor: pointer;   
+        }
+        
+        /* 호버 시 살짝 튀어 오르기 (선택) */
+        .status-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
 
         .status-ok { 
@@ -707,7 +715,24 @@
                         const isMobile = window.innerWidth <= 1200;
                         const srvMini = document.getElementById('srv-mini');
                         const badge = document.getElementById('srv-status');
-                        
+                        // 대시보드 링크
+                        const TARGET_URL = 'http://3.219.205.4:7070/health/dashboard';
+
+                        // 배지 클릭 → 새 탭 오픈
+                        badge.setAttribute('title', '대시보드 열기');
+                        badge.setAttribute('role', 'button');
+                        badge.setAttribute('tabindex', '0');
+                        function openDashboard() {
+                        window.open(TARGET_URL, '_blank', 'noopener,noreferrer');
+                        }
+                        badge.addEventListener('click', openDashboard);
+                        badge.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDashboard(); }
+                        });
+
+                        // 그래프 영역 클릭 → 새 탭 오픈 (ECharts 캔버스 위에서 동작하도록 ZRender 사용)
+                        c.getZr().on('click', openDashboard);
+
                         if (!isMobile) {
                             // 데스크톱으로 복원시 원래 위치로 강제 이동
                             srvMini.style.position = 'absolute';
