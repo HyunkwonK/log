@@ -6,8 +6,8 @@
     <title>김현권 - 시스템엔지니어 경력기술서</title>
     <style>
         /* 추가 */
-        #srv-mini { position:absolute; top:30px; right:30px; width:300px; height:140px; z-index:3; }
-        @media (max-width: 980px){ #srv-mini { position:static; width:100%; height:180px; margin:10px 0; } }
+        /* #srv-mini { position:absolute; top:30px; right:30px; width:300px; height:140px; z-index:3; }
+        @media (max-width: 980px){ #srv-mini { position:static; width:100%; height:180px; margin:10px 0; } } */
 
         * {
             margin: 0;
@@ -467,6 +467,40 @@
         @media (max-width:980px){
         .status-badge{ position:static; display:inline-block; margin:8px 0 0 0; }
         }
+        /* Server Status – card style */
+        .server-status { padding: 50px; background: #f8fafc; }
+        .status-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        padding: 22px;
+        display: grid;
+        grid-template-columns: 1.8fr 1fr;
+        gap: 20px;
+        align-items: center;
+        }
+        @media (max-width: 980px){
+        .status-card { grid-template-columns: 1fr; }
+        }
+        .status-head {
+        display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;
+        }
+        .status-title { font-size:1.1rem; font-weight:700; color:#1e293b; }
+        .status-chip{
+        padding:6px 10px; border-radius:999px; font-weight:700; color:#fff; 
+        }
+        .chip-ok{ background:#10b981; } .chip-warn{ background:#f59e0b; } .chip-bad{ background:#ef4444; }
+
+        #srv-mini { width:100%; height:180px; } /* 그래프는 카드 안으로 이동 */
+
+        .meters { display:flex; flex-direction:column; gap:10px; }
+        .meter { display:grid; grid-template-columns: 58px 1fr 52px; gap:10px; align-items:center; }
+        .meter .label{ font-weight:700; color:#334155; }
+        .meter .bar{ height:10px; background:#edf2f7; border-radius:999px; overflow:hidden; }
+        .meter .fill{ height:100%; width:0%; border-radius:999px; transition: width .4s ease; 
+        background: linear-gradient(90deg,#667eea,#764ba2); }
+        .meter .val{ font-weight:700; color:#334155; text-align:right; }
+
 
     </style>
 </head>
@@ -617,6 +651,117 @@
         </section>
 
         <!-- Tech Stack Section -->
+        
+        <section class="server-status">
+            <h2 class="section-title">Server Status</h2>
+            <div class="status-card">
+                <div>
+                <div class="status-head">
+                    <div class="status-title">리소스 현황 (최근 120 샘플)</div>
+                    <div id="status-chip" class="status-chip chip-ok">☀️ 정상</div>
+                </div>
+                <div id="srv-mini"></div>
+                </div>
+                <div class="meters">
+                <div class="meter" data-key="cpu">
+                    <div class="label">CPU</div>
+                    <div class="bar"><div class="fill"></div></div>
+                    <div class="val">--%</div>
+                </div>
+                <div class="meter" data-key="mem">
+                    <div class="label">MEM</div>
+                    <div class="bar"><div class="fill"></div></div>
+                    <div class="val">--%</div>
+                </div>
+                <div class="meter" data-key="disk">
+                    <div class="label">DISK</div>
+                    <div class="bar"><div class="fill"></div></div>
+                    <div class="val">--%</div>
+                </div>
+                </div>
+            </div>
+            </section>
+
+            <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+            <script>
+            (function(){
+            const el = document.getElementById('srv-mini');
+            const chip = document.getElementById('status-chip');
+            const chart = echarts.init(el);
+
+            function toPct(v){ if(v==null||isNaN(v))return 0; return v<=1?Math.round(v*100):Math.round(v); }
+            function classify(v){
+                if (v.cpu<60 && v.mem<70 && v.disk<80) return 'ok';
+                if (v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad';
+                return 'warn';
+            }
+            function setChip(cls){
+                chip.className = 'status-chip ' + (cls==='ok'?'chip-ok':cls==='warn'?'chip-warn':'chip-bad');
+                chip.textContent = (cls==='ok'?'☀️ 정상':cls==='warn'?'☁️ 주의':'🌧️ 위험');
+            }
+            function setMeters(last){
+                ['cpu','mem','disk'].forEach(k=>{
+                const m = document.querySelector(`.meter[data-key="${k}"]`);
+                m.querySelector('.fill').style.width = (last[k]||0)+'%';
+                m.querySelector('.val').textContent = (last[k]||0)+'%';
+                });
+            }
+
+            chart.setOption({
+                grid:{left:30,right:10,top:10,bottom:28,containLabel:true},
+                tooltip:{trigger:'axis'},
+                legend:{show:false},
+                xAxis:{type:'category',data:[]},
+                yAxis:{type:'value',min:0,max:100,splitLine:{lineStyle:{type:'dashed',color:'#e5e7eb'}}},
+                series:[
+                {name:'CPU', type:'line', smooth:true, symbol:'none',
+                areaStyle:{opacity:.18}, data:[]},
+                {name:'MEM', type:'line', smooth:true, symbol:'none',
+                areaStyle:{opacity:.14}, data:[]},
+                {name:'DISK', type:'line', smooth:true, symbol:'none',
+                areaStyle:{opacity:.14}, data:[]}
+                ],
+                animation:false
+            });
+
+            async function reload(){
+                try{
+                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                const lines = raw.trim()? raw.trim().split('\n') : [];
+                const arr = [];
+                for (const ln of lines){ try{ arr.push(JSON.parse(ln)); }catch(_){} }
+                if(!arr.length){ setChip('warn'); return; }
+
+                const keep = 120;
+                const a = arr.slice(-keep);
+                const labels = a.map(d=>{
+                    const t = d.ts? new Date(d.ts): null;
+                    return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '';
+                });
+                const cpu = a.map(d=>toPct(d.cpu ?? d.cpu_pct ?? d.cpuUsage ?? d.cpu_percent));
+                const mem = a.map(d=>toPct(d.mem ?? d.mem_pct ?? d.memory ?? d.memory_percent));
+                const dsk = a.map(d=>toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
+
+                chart.setOption({ xAxis:{data:labels}, series:[{data:cpu},{data:mem},{data:dsk}] });
+
+                const last = { cpu: cpu.at(-1)||0, mem: mem.at(-1)||0, disk: dsk.at(-1)||0 };
+                setChip(classify(last));
+                setMeters(last);
+                }catch(e){
+                setChip('warn');
+                }
+            }
+            reload();
+            setInterval(reload, 30000);
+            addEventListener('resize', ()=>chart.resize());
+            })();
+            </script>
+
+
+
+
+
+        
         <section class="tech-stack">
             <h2 class="section-title">Tech Stack</h2>
             <div class="tech-grid">
