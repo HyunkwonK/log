@@ -713,7 +713,37 @@
 
                 await reload();
                 setInterval(reload, 30000);
-                addEventListener('resize', ()=>c.resize());
+
+                // 반응형 복원 문제 해결을 위한 개선된 resize 이벤트
+                let resizeTimer;
+                addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => {
+                        // 차트 리사이즈
+                        c.resize();
+                        
+                        // 반응형 복원 처리
+                        const isMobile = window.innerWidth <= 980;
+                        const srvMini = document.getElementById('srv-mini');
+                        const badge = document.getElementById('srv-status');
+                        
+                        if (!isMobile) {
+                            // 데스크톱으로 복원시 원래 위치로 강제 이동
+                            srvMini.style.position = 'absolute';
+                            srvMini.style.top = '80px';  /* 차트 위치 복원 */
+                            srvMini.style.right = '50px';
+                            srvMini.style.width = '250px'; /* 차트 크기 복원 */
+                            srvMini.style.height = '110px';
+                            srvMini.style.margin = '0';
+                            
+                            badge.style.position = 'absolute';
+                            badge.style.top = '40px';  /* 배지 위치 복원 */
+                            badge.style.right = '50px';
+                            badge.style.margin = '0';
+                            badge.style.display = 'block';
+                        }
+                    }, 100);
+                });
                 })();
             </script>
 
