@@ -5,28 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김현권 - 시스템엔지니어 경력기술서</title>
     <style>
-        #srv-mini { position:absolute; top:80px; right:50px; width:250px; height:110px; z-index:3; }
-        @media (max-width: 980px){ #srv-mini { position:static; width:100%; height:130px; margin:15px 0 0 0; } }
+        /* 공통 리셋 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* 차트 위에 마우스가 있을 때 배지를 잠시 비활성화 */
-        .status-badge.dim {
-        opacity: .45;            /* 살짝 비쳐 보이게 */
-        pointer-events: none;    /* 차트 툴팁/호버 막지 않게 */
-        transition: opacity .15s ease;
-        }
-
-        /* (백업) ECharts 툴팁은 항상 최상단으로 */
-        #srv-mini .echarts-tooltip,
-        .echarts-tooltip { 
-        z-index: 2147483647 !important;
-        pointer-events: none;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
@@ -34,14 +15,9 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
         }
-        
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
+
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
         /* Header Section */
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -50,840 +26,275 @@
             position: relative;
             overflow: hidden;
         }
-        
         .header::before {
             content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: absolute; inset: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
-              /* 우선순위 */
-            z-index: 1;
-            pointer-events: none;  
+            opacity: .3; z-index: 1; pointer-events: none;
         }
-        
-        .header-content {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .name {
-            font-size: 3.2em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .title {
-            font-size: 1.4em;
-            margin-bottom: 25px;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        .contact-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            font-size: 1.1em;
-        }
-        
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .contact-item::before {
-            content: '';
-            width: 20px;
-            height: 20px;
-            background-size: contain;
-            opacity: 0.8;
-        }
-        
-        .phone::before { content: '📞'; }
-        .email::before { content: '📧'; }
-        .blog::before { content: '🔗'; }
+        .header-content { position: relative; z-index: 2; max-width: calc(100% - 320px); }
+
+        .name { font-size: 3.2em; font-weight: 700; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .title { font-size: 1.4em; margin-bottom: 25px; opacity: .9; font-weight: 300; }
+
+        .contact-info { display: flex; flex-wrap: wrap; gap: 30px; font-size: 1.1em; }
+        .contact-item { display: flex; align-items: center; gap: 8px; }
+        .contact-item::before { content: ''; width: 20px; height: 20px; background-size: contain; opacity: .8; }
+        .phone::before { content: '📞'; } .email::before { content: '📧'; } .blog::before { content: '🔗'; }
 
         /* Summary Section */
-        .summary {
-            padding: 50px;
-            background: #f8fafc;
-            border-left: 5px solid #667eea;
-        }
-        
-        .summary h2 {
-            font-size: 1.8em;
-            color: #2d3748;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .summary-content {
-            font-size: 1.1em;
-            line-height: 1.8;
-            color: #4a5568;
-            margin-bottom: 25px;
-        }
-        
-        .experience-badges {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-        
-        .badge-abc {
-            background: linear-gradient(45deg, #ff9a56, #ff6b35);
-            color: white;
-        }
-        
-        .badge-doosan {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
-        }
-        
+        .summary { padding: 50px; background: #f8fafc; border-left: 5px solid #667eea; }
+        .summary h2 { font-size: 1.8em; color: #2d3748; margin-bottom: 20px; }
+        .summary-content { font-size: 1.1em; line-height: 1.8; color: #4a5568; margin-bottom: 25px; }
+        .experience-badges { display: flex; gap: 15px; flex-wrap: wrap; }
+        .badge { padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: .9em; }
+        .badge-abc { background: linear-gradient(45deg, #ff9a56, #ff6b35); color: white; }
+        .badge-doosan { background: linear-gradient(45deg, #4facfe, #00f2fe); color: white; }
+
         /* Core Impact Section */
-        .core-impact {
-            padding: 50px;
-            background: white;
-        }
-        
-        .section-title {
-            font-size: 2em;
-            color: #2d3748;
-            margin-bottom: 30px;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-        }
-        
-        .impact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .impact-item {
-            background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 4px solid #10b981;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .impact-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        
-        .impact-title {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-        
-        .impact-result {
-            color: #059669;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        /* Tech Stack Section */
-        .tech-stack {
-            padding: 50px;
-            background: #f8fafc;
-        }
-        
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
-        
-        .tech-category {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-        }
-        
-        .tech-category:hover {
-            transform: translateY(-3px);
-        }
-        
-        .tech-category h3 {
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        
-        .tech-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .tech-tag {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 500;
-        }
-        
-        /* Projects Section */
-        .projects {
-            padding: 50px;
-            background: white;
-        }
-        
-        .project-timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        
-        .project-timeline::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, #667eea, #764ba2);
-        }
-        
-        .project-item {
-            position: relative;
-            margin-bottom: 40px;
-            background: #f8fafc;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .project-item::before {
-            content: '';
-            position: absolute;
-            left: -45px;
-            top: 30px;
-            width: 15px;
-            height: 15px;
-            background: #667eea;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 0 3px #667eea;
-        }
-        
-        .project-header {
-            margin-bottom: 20px;
-        }
-        
-        .project-title {
-            font-size: 1.4em;
-            color: #1e293b;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-        
-        .project-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .project-period {
-            background: #64748b;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-        }
-        
-        .project-company {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        
-        .company-abc {
-            background: linear-gradient(45deg, #ff9a56, #ff6b35);
-            color: white;
-        }
-        
-        .company-doosan {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
-        }
-        
-        .project-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr 2fr;
-            gap: 25px;
-            margin-bottom: 20px;
-        }
-        
-        .project-description ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .project-description li {
-            margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .project-description li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
-        }
+        .core-impact { padding: 50px; background: white; }
+        .section-title { font-size: 2em; color: #2d3748; margin-bottom: 30px; position: relative; padding-bottom: 15px; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: linear-gradient(45deg, #667eea, #764ba2); }
+        .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .impact-item { background: linear-gradient(145deg, #f1f5f9, #e2e8f0); padding: 25px; border-radius: 15px; border-left: 4px solid #10b981; transition: transform .3s, box-shadow .3s; }
+        .impact-item:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .impact-title { font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+        .impact-result { color: #059669; font-weight: 600; margin-bottom: 5px; }
 
-        .project-description strong {
-            margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
-            color: #059669;
-        }
-        
-        
-        .project-techs {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .tech-item {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .project-results ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .project-results li {
-            margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
-            color: #059669;
-            font-weight: 500;
-        }
-        
-        .project-results li::before {
-            content: '✓';
-            position: absolute;
-            left: 0;
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        /* Certifications Section */
-        .certifications {
-            padding: 50px;
-            background: #f8fafc;
-        }
-        
-        .cert-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .cert-item {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-        
-        .cert-item:hover {
-            transform: translateY(-2px);
-        }
-        
-        .cert-name {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 5px;
-        }
-        
-        .cert-date {
-            color: #6b7280;
-            font-size: 0.9em;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                margin: 0;
-                box-shadow: none;
-            }
-            
-            .header, .summary, .core-impact, .tech-stack, .projects, .certifications {
-                padding: 30px 20px;
-            }
-            
-            .name {
-                font-size: 2.5em;
-            }
-            
-            .contact-info {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .project-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .impact-grid, .tech-grid, .cert-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        /* 추가 서버 상태 배지 08/28 */
-        #srv-mini { 
-            position: absolute; 
-            top: 80px;  /* 이름 아래쪽에 위치 */
-            right: 50px; 
-            width: 250px; 
-            height: 110px; 
-            z-index: 3;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            /* 추가 */
-            transition: transform .2s ease, box-shadow .2s ease;
-            will-change: transform, box-shadow;
-            
-        }
-        #srv-mini:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
+        /* Tech Stack */
+        .tech-stack { padding: 50px; background: #f8fafc; }
+        .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .tech-category { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform .3s; }
+        .tech-category:hover { transform: translateY(-3px); }
+        .tech-category h3 { color: #2d3748; margin-bottom: 15px; font-size: 1.2em; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .tech-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tech-tag, .tech-item { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 6px 12px; border-radius: 12px; font-size: .85em; font-weight: 500; text-align: center; }
 
-        /* 기존 .status-badge 스타일을 이걸로 교체하세요 */
-        .status-badge {
-            position: absolute; 
-            top: 40px;  /* 이름 오른쪽, 차트보다 위에 */
-            right: 50px; 
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff; 
-            padding: 6px 12px; 
-            border-radius: 18px; 
-            font-weight: 600;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 0.75em;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            white-space: nowrap; /* 텍스트가 한 줄로 유지되도록 */
-            cursor: pointer;   
-            /* 우선순위 */
-            z-index: 4;
-        }
-        
-        /* 호버 시 살짝 튀어 오르기 (선택) */
-        .status-badge:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
+        /* Projects */
+        .projects { padding: 50px; background: white; }
+        .project-timeline { position: relative; padding-left: 30px; }
+        .project-timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 3px; background: linear-gradient(to bottom, #667eea, #764ba2); }
+        .project-item { position: relative; margin-bottom: 40px; background: #f8fafc; padding: 30px; border-radius: 15px; border: 1px solid #e2e8f0; }
+        .project-item::before { content: ''; position: absolute; left: -45px; top: 30px; width: 15px; height: 15px; background: #667eea; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 3px #667eea; }
+        .project-header { margin-bottom: 20px; }
+        .project-title { font-size: 1.4em; color: #1e293b; margin-bottom: 8px; font-weight: 700; }
+        .project-meta { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .project-period { background: #64748b; color: white; padding: 4px 12px; border-radius: 12px; font-size: .85em; }
+        .project-company { padding: 4px 12px; border-radius: 12px; font-size: .85em; font-weight: 600; }
+        .company-abc { background: linear-gradient(45deg, #ff9a56, #ff6b35); color: white; }
+        .company-doosan { background: linear-gradient(45deg, #4facfe, #00f2fe); color: white; }
+        .project-content { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 25px; margin-bottom: 20px; }
+        .project-description ul, .project-results ul { list-style: none; padding: 0; }
+        .project-description li, .project-results li { margin-bottom: 8px; padding-left: 20px; position: relative; }
+        .project-description li::before { content: '▸'; position: absolute; left: 0; color: #667eea; font-weight: bold; }
+        .project-description strong { margin-bottom: 8px; padding-left: 20px; position: relative; color: #059669; }
+        .project-results li { color: #059669; font-weight: 500; }
+        .project-results li::before { content: '✓'; position: absolute; left: 0; color: #059669; font-weight: bold; }
 
-        .status-ok { 
-            background: linear-gradient(135deg, rgba(16,185,129,0.7), rgba(5,150,105,0.7)); 
-            border-color: rgba(16,185,129,0.25);
-        }
+        /* Certifications */
+        .certifications { padding: 50px; background: #f8fafc; }
+        .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .cert-item { background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #10b981; box-shadow: 0 3px 10px rgba(0,0,0,0.05); transition: transform .3s; }
+        .cert-item:hover { transform: translateY(-2px); }
+        .cert-name { font-weight: 700; color: #1e293b; margin-bottom: 5px; }
+        .cert-date { color: #6b7280; font-size: .9em; }
 
-        .status-warn { 
-            background: linear-gradient(135deg, rgba(245,158,11,0.7), rgba(217,119,6,0.7)); 
-            border-color: rgba(245,158,11,0.25);
-        }
-
-        .status-bad { 
-            background: linear-gradient(135deg, rgba(239,68,68,0.7), rgba(220,38,38,0.7)); 
-            border-color: rgba(239,68,68,0.25);
-        }
-
-        @media (max-width: 980px){
-            #srv-mini { 
-                position: static; 
-                width: 100%; 
-                height: 130px; 
-                margin: 15px 0 0 0; 
-                background: rgba(255, 255, 255, 0.12);
-            }
-            
-            .status-badge { 
-                position: static; 
-                display: inline-block; 
-                margin: 0 0 10px 0; 
-                width: fit-content;
-            }
-        }
-
-
-        /* 차트 제목 스타일 */
-        .chart-mini-title {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.7em;
-            font-weight: 500;
-            margin-bottom: 2px;
-            text-align: center;
-        }
-
-        /* 헤더 컨텐츠가 차트와 겹치지 않도록 조정 */
-        .header-content {
-            position: relative;
-            z-index: 2;
-            max-width: calc(100% - 320px); /* 차트 공간 확보 */
-        }
-
+        /* Responsive (page layout) */
         @media (max-width: 980px) {
-            .header-content {
-                max-width: 100%;
+            .container { margin: 0; box-shadow: none; }
+            .header, .summary, .core-impact, .tech-stack, .projects, .certifications { padding: 30px 20px; }
+            .name { font-size: 2.5em; }
+            .contact-info { flex-direction: column; gap: 15px; }
+            .project-content { grid-template-columns: 1fr; gap: 20px; }
+            .impact-grid, .tech-grid, .cert-grid { grid-template-columns: 1fr; }
+            .header-content { max-width: 100%; }
+        }
+
+        /* =================== 미니 모니터(그래프) – 충돌 제거/교체 =================== */
+
+        /* 배지: 항상 최상층 */
+        .status-badge{
+            position: absolute; top: 40px; right: 50px;
+            background: rgba(255,255,255,0.12); color:#fff;
+            padding: 6px 12px; border-radius: 18px; font-weight: 600;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.15);
+            font-size: .75em; box-shadow: 0 2px 10px rgba(0,0,0,.1);
+            transition: all .3s ease; white-space: nowrap; cursor: pointer;
+            z-index: 20;
+        }
+        .status-badge:hover{ transform: translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,.15); }
+        .status-ok  { background: linear-gradient(135deg, rgba(16,185,129,.7), rgba(5,150,105,.7)); border-color: rgba(16,185,129,.25); }
+        .status-warn{ background: linear-gradient(135deg, rgba(245,158,11,.7), rgba(217,119,6,.7)); border-color: rgba(245,158,11,.25); }
+        .status-bad { background: linear-gradient(135deg, rgba(239,68,68,.7), rgba(220,38,38,.7)); border-color: rgba(239,68,68,.25); }
+
+        /* 차트가 올라올 때 배지를 흐리게 */
+        .status-badge.dim { opacity: .45; pointer-events: none; transition: opacity .15s ease; }
+
+        /* 미니 위젯 컨테이너 */
+        #srv-mini{
+            position: absolute; /* 헤더 우상단 고정 */
+            top: 80px; right: 50px; width: 250px; height: 110px;
+            z-index: 3; background: rgba(255,255,255,.10);
+            backdrop-filter: blur(8px);
+            border-radius: 12px; border: 1px solid rgba(255,255,255,.20);
+            padding: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.10);
+            cursor: pointer; transition: transform .2s ease, box-shadow .2s ease;
+            will-change: transform, box-shadow; overflow: hidden;
+        }
+        #srv-mini:hover{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.15); }
+
+        /* 차트는 바닥층 */
+        #srv-mini-chart{
+            position: absolute; inset: 8px 8px 32px 8px; /* 우하단 버튼 자리 확보 */
+            z-index: 1;
+        }
+
+        /* 우하단 버튼은 차트 위/배지 아래 */
+        .detail-button{
+            position: absolute; right: 15px; bottom: 10px; z-index: 10;
+            font-size: 11px; color: rgba(255,255,255,.85);
+            background: rgba(255,255,255,.12); backdrop-filter: blur(5px);
+            padding: 4px 10px; border-radius: 12px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,.35);
+            cursor: pointer; transition: background .2s ease, color .2s ease, transform .15s ease;
+        }
+        .detail-button:hover{ background: rgba(255,255,255,.2); color:#fff; transform: translateY(-1px); }
+
+        /* 차트 툴팁은 항상 최상단 */
+        #srv-mini .echarts-tooltip, .echarts-tooltip { z-index: 2147483647 !important; pointer-events: none; }
+
+        /* 모바일: relative 스택(절대 static 금지) */
+        @media (max-width: 980px){
+            #srv-mini{
+                position: relative; width: 100%; height: 130px; margin: 15px 0 0 0;
+                right: auto; top: auto;
             }
+            .status-badge{ position: static; display: inline-block; margin: 0 0 10px 0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        
         <!-- Header Section -->
         <header class="header">
-        <style>
-            /* ======== 헤더 전용 스타일(중복 제거/정리) ======== */
-            #srv-mini {
-            position: absolute;
-            top: 80px;           /* 이름 아래 */
-            right: 50px;
-            width: 250px;
-            height: 110px;
-            z-index: 3;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            cursor: pointer;     /* 클릭 가능 표시 */
-            }
-
-            .status-badge {
-            position: absolute;
-            top: 40px;           /* 그래프 위, 이름 오른쪽 */
-            right: 50px;
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 18px;
-            font-weight: 600;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 0.75em;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            cursor: pointer;     /* 클릭 가능 표시 */
-            /* 우선 순위 */
-            z-index: 4;
-            }
-            .status-badge:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            }
-            .status-ok  { background: linear-gradient(135deg, rgba(16,185,129,0.7), rgba(5,150,105,0.7));  border-color: rgba(16,185,129,0.25); }
-            .status-warn{ background: linear-gradient(135deg, rgba(245,158,11,0.7), rgba(217,119,6,0.7));  border-color: rgba(245,158,11,0.25); }
-            .status-bad { background: linear-gradient(135deg, rgba(239,68,68,0.7),  rgba(220,38,38,0.7));  border-color: rgba(239,68,68,0.25); }
-
-            /* 헤더 콘텐츠가 차트와 겹치지 않도록 오른쪽 여유 */
-            .header-content {
-            position: relative;
-            z-index: 2;
-            max-width: calc(100% - 320px); /* 차트 공간 확보 */
-            }
-
-            /* 모바일(<=980px)에서는 세로 스택 */
-            @media (max-width: 980px) {
-            #srv-mini {
-                position: static;
-                width: 100%;
-                height: 130px;
-                margin: 15px 0 0 0;
-            }
-            .status-badge {
-                position: static;
-                display: inline-block;
-                margin: 0 0 10px 0;
-                width: fit-content;
-            }
-            .header-content { max-width: 100%; }
-            }
-
-            .chart-mini-title {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.7em;
-            font-weight: 500;
-            margin-bottom: 2px;
-            text-align: center;
-            }
-            /* 상세보기 */
-            .detail-button {
-                position: absolute;
-                bottom: 10px;
-                right: 15px;
-                font-size: 11px;
-                color: rgba(255, 255, 255, 0.7);
-                background: rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(5px);
-                padding: 4px 10px;
-                border-radius: 12px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: background 0.2s ease, color 0.2s ease;
-                z-index: 5;
-            }
-            .detail-button:hover {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-            }
-
-        </style>
-
-        <div class="header-content">
-            <h1 class="name">김현권</h1>
-            <div class="title">System Engineer · 3년차</div>
-            <div class="contact-info">
-            <div class="contact-item phone">010-5009-0595</div>
-            <div class="contact-item email">sidml123@naver.com</div>
-            <div class="contact-item blog">
-                <a href="https://myit.tistory.com" target="_blank" rel="noopener" style="color:white; text-decoration:none;">IT Blog</a>
+            <div class="header-content">
+                <h1 class="name">김현권</h1>
+                <div class="title">System Engineer · 3년차</div>
+                <div class="contact-info">
+                    <div class="contact-item phone">010-5009-0595</div>
+                    <div class="contact-item email">sidml123@naver.com</div>
+                    <div class="contact-item blog"><a href="https://myit.tistory.com" target="_blank" rel="noopener" style="color:white; text-decoration:none;">IT Blog</a></div>
+                </div>
             </div>
+
+            <!-- 미니 서버 모니터 -->
+            <div id="srv-mini">
+                <div id="srv-mini-chart" aria-hidden="true"></div>
+                <span class="detail-button"
+                      onclick="window.open('https://hkk-it.kro.kr/health/dashboard','_blank','noopener,noreferrer')"
+                      aria-label="상세확인">&lt;상세확인&gt;</span>
             </div>
-        </div>
+            <div id="srv-status" class="status-badge">--</div>
 
-        <div id="srv-mini">
-            <div id="srv-mini-chart" aria-hidden="true"></div>
-            <span class="detail-button"
-                    onclick="window.open('https://hkk-it.kro.kr/health/dashboard','_blank','noopener,noreferrer')"
-                    aria-label="상세확인">&lt;상세확인&gt;</span>
-        </div>
+            <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
+            <script>
+                (async function () {
+                  const el    = document.getElementById('srv-mini-chart');
+                  const badge = document.getElementById('srv-status');
+                  const c     = echarts.init(el);
+                  const srvMini = document.getElementById('srv-mini');
 
-        <div id="srv-status" class="status-badge">--</div>
+                  // 차트 위에 올리면 배지를 잠시 투명
+                  srvMini.addEventListener('mouseenter', () => badge.classList.add('dim'));
+                  srvMini.addEventListener('mouseleave', () => badge.classList.remove('dim'));
+                  srvMini.addEventListener('touchstart', () => badge.classList.add('dim'), {passive:true});
+                  srvMini.addEventListener('touchend',   () => badge.classList.remove('dim'));
 
-        <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
-        <script>
-            (async function () {
-            // const el    = document.getElementById('srv-mini');
-            const el    = document.getElementById('srv-mini-chart');   
-            const badge = document.getElementById('srv-status');
-            const c     = echarts.init(el);
-            const srvMini = document.getElementById('srv-mini');
+                  // 대시보드 링크
+                  const TARGET_URL = 'https://hkk-it.kro.kr/health/dashboard';
+                  function openDashboard(){ window.open(TARGET_URL, '_blank', 'noopener,noreferrer'); }
+                  badge.setAttribute('title','대시보드 열기');
+                  badge.setAttribute('role','button');
+                  badge.setAttribute('tabindex','0');
+                  badge.addEventListener('click', openDashboard);
+                  badge.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); openDashboard(); }});
+                  c.getZr().on('click', openDashboard);
 
-            // 차트 위에 올리면 배지를 잠시 투명 + 클릭 비활성
-            srvMini.addEventListener('mouseenter', () => badge.classList.add('dim'));
-            srvMini.addEventListener('mouseleave', () => badge.classList.remove('dim'));
-
-            // 모바일 터치 대응
-            srvMini.addEventListener('touchstart', () => badge.classList.add('dim'), {passive:true});
-            srvMini.addEventListener('touchend',   () => badge.classList.remove('dim'));
-   
-            /* === 1) 대시보드 링크: 초기화 시 1회만 등록 === */
-            const TARGET_URL = 'https://hkk-it.kro.kr/health/dashboard';
-            function openDashboard() {
-                window.open(TARGET_URL, '_blank', 'noopener,noreferrer');
-            }
-            // 배지 접근성/클릭
-            badge.setAttribute('title', '대시보드 열기');
-            badge.setAttribute('role',  'button');
-            badge.setAttribute('tabindex', '0');
-            badge.addEventListener('click', openDashboard);
-            badge.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDashboard(); }
-            });
-            // 차트(캔버스) 클릭
-            c.getZr().on('click', openDashboard);
-
-            /* === 2) 차트 옵션 === */
-            c.setOption({
-                backgroundColor: 'transparent',
-                grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
-                tooltip: { 
-                    trigger: 'axis',
-                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
-                    textStyle: { color: '#fff', fontSize: 11 },
-
-                    // ▼ 배지 위로 띄우기
-                    appendToBody: true,
-                    extraCssText: 'z-index:2147483647; pointer-events:none;',
-
-                    // ▼ 배지(오른쪽 위) 근처면 살짝 옮겨서 겹침 최소화
-                    position: function (pos, params, dom, rect, size) {
-                        const [x, y] = pos;
-                        const viewW  = size.viewSize[0];
-                        const tipW   = size.contentSize[0];
-                        const tipH   = size.contentSize[1];
-
-                        // 배지 대략 영역: 화면 오른쪽 320px 이내 & 상단 140px 이내
+                  // 차트 옵션
+                  c.setOption({
+                    backgroundColor: 'transparent',
+                    grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
+                    tooltip: {
+                      trigger: 'axis',
+                      backgroundColor: 'rgba(0,0,0,.75)',
+                      borderColor: 'rgba(255,255,255,.2)',
+                      textStyle: { color: '#fff', fontSize: 11 },
+                      appendToBody: true,
+                      extraCssText: 'z-index:2147483647; pointer-events:none;',
+                      position: function (pos, params, dom, rect, size) {
+                        const [x,y] = pos; const viewW = size.viewSize[0]; const tipW = size.contentSize[0];
                         const nearBadge = (viewW - x < 320) && (y < 140);
-                        if (nearBadge) {
-                        return [x - tipW - 12, y + 12]; // 마우스 왼쪽/아래로 이동
-                        }
-                        return [x + 12, y + 12]; // 기본 위치(마우스 오른쪽/아래)
-                    }
+                        return nearBadge ? [x - tipW - 12, y + 12] : [x + 12, y + 12];
+                      }
                     },
-                legend: {
-                data: ['CPU', 'MEM', 'DISK'],
-                textStyle: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 9 },
-                top: 2, itemWidth: 12, itemHeight: 8
-                },
-                xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
-                yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.08)' } } },
-                series: [
-                { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:0.25, color:'rgba(16,185,129,0.25)' }, data:[] },
-                { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:0.2,  color:'rgba(59,130,246,0.2)' }, data:[] },
-                { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:0.15, color:'rgba(245,158,11,0.15)' }, data:[] }
-                ],
-                animation: false
-            });
+                    legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.8)', fontSize: 9 }, top: 2, itemWidth: 12, itemHeight: 8 },
+                    xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
+                    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255,255,255,.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } } },
+                    series: [
+                      { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
+                      { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
+                      { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
+                    ],
+                    animation: false
+                  });
 
-            /* === 3) 데이터 로딩 === */
-            function toPct(v){ if(v==null||isNaN(v))return 0; return v<=1?Math.round(v*100):Math.round(v); }
-            function classify(v){
-                if (v.cpu<60 && v.mem<70 && v.disk<80) return 'ok';
-                if (v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad';
-                return 'warn';
-            }
-            function renderBadge(v){
-                const cls  = classify(v);
-                const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
-                const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
-                badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
-                badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
-            }
+                  // 데이터 로딩
+                  function toPct(v){ if(v==null||isNaN(v)) return 0; return v<=1?Math.round(v*100):Math.round(v); }
+                  function classify(v){ if(v.cpu<60 && v.mem<70 && v.disk<80) return 'ok'; if(v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad'; return 'warn'; }
+                  function renderBadge(v){
+                    const cls = classify(v);
+                    const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
+                    const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
+                    badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
+                    badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
+                  }
 
-            async function reload(){
-                try{
-                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
-                const lines  = raw.trim() ? raw.trim().split('\n') : [];
-                const parsed = [];
-                for (const ln of lines){ try { parsed.push(JSON.parse(ln)); } catch(_){} }
-                if (!parsed.length){ badge.className='status-badge'; badge.textContent='데이터 없음'; return; }
+                  async function reload(){
+                    try{
+                      const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                      const lines = raw.trim()? raw.trim().split('\n'): [];
+                      const parsed = []; for(const ln of lines){ try{ parsed.push(JSON.parse(ln)); }catch(_){ } }
+                      if(!parsed.length){ badge.className='status-badge'; badge.textContent='데이터 없음'; return; }
 
-                const keep = 120;
-                const arr  = parsed.slice(-keep);
+                      const keep = 120; const arr = parsed.slice(-keep);
+                      const labels = arr.map(d => { const t = d.ts? new Date(d.ts): null; return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '' });
+                      const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
+                      const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
+                      const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
 
-                const labels = arr.map(d => {
-                    const t = d.ts ? new Date(d.ts) : null;
-                    return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '';
-                });
-                const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
-                const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
-                const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
+                      c.setOption({ xAxis:{ data: labels }, series:[ {data:cpuArr}, {data:memArr}, {data:diskArr} ] });
 
-                c.setOption({ xAxis:{data:labels}, series:[{data:cpuArr},{data:memArr},{data:diskArr}] });
+                      const last = { cpu: cpuArr.at(-1) ?? 0, mem: memArr.at(-1) ?? 0, disk: diskArr.at(-1) ?? 0 };
+                      renderBadge(last);
+                    }catch(e){
+                      badge.className = 'status-badge';
+                      badge.textContent = '데이터 로드 실패';
+                    }
+                  }
 
-                const last = {
-                    cpu:  cpuArr.length?  cpuArr[cpuArr.length-1]  : 0,
-                    mem:  memArr.length?  memArr[memArr.length-1]  : 0,
-                    disk: diskArr.length? diskArr[diskArr.length-1] : 0
-                };
-                renderBadge(last);
-                }catch(e){
-                badge.className = 'status-badge';
-                badge.textContent = '데이터 로드 실패';
-                }
-            }
+                  await reload();
+                  setInterval(reload, 30000);
 
-            await reload();
-            setInterval(reload, 30000);
+                  // 레이아웃: 포지션 건드리지 말고 차트만 리사이즈
+                  function applyLayout(){ c.resize(); }
+                  applyLayout();
 
-            /* === 4) 레이아웃 적용: 첫 진입 + 리사이즈 === */
-            function applyLayout() {
-                // 차트 컨테이너 크기에 맞춰 리사이즈
-                c.resize();
-
-                const isMobile = window.innerWidth <= 1200;   // 같은 기준 유지
-                const srvMini  = document.getElementById('srv-mini');
-
-                if (!isMobile) {
-                srvMini.style.position = 'absolute';
-                srvMini.style.top = '80px';
-                srvMini.style.right = '50px';
-                srvMini.style.width = '250px';
-                srvMini.style.height = '110px';
-                srvMini.style.margin = '0';
-
-                badge.style.position = 'absolute';
-                badge.style.top = '40px';
-                badge.style.right = '50px';
-                badge.style.margin = '0';
-                badge.style.display = 'block';
-                } else {
-                srvMini.style.position = 'static';
-                srvMini.style.width = '100%';
-                srvMini.style.height = '130px';
-                srvMini.style.margin = '15px 0 0 0';
-
-                badge.style.position = 'static';
-                badge.style.display = 'inline-block';
-                badge.style.margin = '0 0 10px 0';
-                }
-            }
-
-            // ✅ 첫 진입에서도 즉시 적용 (겹침 방지)
-            applyLayout();
-
-            // 디바운스 리사이즈
-            let resizeTimer;
-            addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(applyLayout, 100);
-            });
-            })();
-        </script>
+                  let resizeTimer;
+                  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(applyLayout, 100); });
+                })();
+            </script>
         </header>
-
 
         <!-- Summary Section -->
         <section class="summary">
@@ -902,30 +313,12 @@
         <section class="core-impact">
             <h2 class="section-title">Core Impact</h2>
             <div class="impact-grid">
-                <div class="impact-item">
-                    <div class="impact-title">O4O 통합 플랫폼 구축</div>
-                    <div class="impact-result">→ 330개 매장 온오프라인 연동 (일평균 200건 주문 증가)</div>
-                </div>
-                <div class="impact-item">
-                    <div class="impact-title">사내 직원 APP 차세대 프로젝트</div>
-                    <div class="impact-result">→ 일 2,100명 사용 앱 마이그레이션 및 신규기능 기획 및 구축</div>
-                </div>
-                <div class="impact-item">
-                    <div class="impact-title">전국 매장 전자가격표 시스템 구축</div>
-                    <div class="impact-result">→ 가격 반영 실시간</div>
-                </div>
-                <div class="impact-item">
-                    <div class="impact-title">GSMA SASUP 보안심사 통과</div>
-                    <div class="impact-result">→ 국제 보안 표준 충족 및 서비스 신뢰성 강화</div>
-                </div>
-                <div class="impact-item">
-                    <div class="impact-title">차세대 백업 시스템 구축</div>
-                    <div class="impact-result">→ 백업 시간 67% 단축 및 시스템 안정화</div>
-                </div>
-                <div class="impact-item">
-                    <div class="impact-title">CI/CD 자동화 환경 구축</div>
-                    <div class="impact-result">→ 개발 생산성 증대 (Gitlab CI 코드 빌드 및 검증, Jenkins 애플리케이션 자동 배포)</div>
-                </div>
+                <div class="impact-item"><div class="impact-title">O4O 통합 플랫폼 구축</div><div class="impact-result">→ 330개 매장 온오프라인 연동 (일평균 200건 주문 증가)</div></div>
+                <div class="impact-item"><div class="impact-title">사내 직원 APP 차세대 프로젝트</div><div class="impact-result">→ 일 2,100명 사용 앱 마이그레이션 및 신규기능 기획 및 구축</div></div>
+                <div class="impact-item"><div class="impact-title">전국 매장 전자가격표 시스템 구축</div><div class="impact-result">→ 가격 반영 실시간</div></div>
+                <div class="impact-item"><div class="impact-title">GSMA SASUP 보안심사 통과</div><div class="impact-result">→ 국제 보안 표준 충족 및 서비스 신뢰성 강화</div></div>
+                <div class="impact-item"><div class="impact-title">차세대 백업 시스템 구축</div><div class="impact-result">→ 백업 시간 67% 단축 및 시스템 안정화</div></div>
+                <div class="impact-item"><div class="impact-title">CI/CD 자동화 환경 구축</div><div class="impact-result">→ 개발 생산성 증대 (Gitlab CI 코드 빌드 및 검증, Jenkins 애플리케이션 자동 배포)</div></div>
             </div>
         </section>
 
@@ -943,40 +336,23 @@
                 </div>
                 <div class="tech-category">
                     <h3>Database</h3>
-                    <div class="tech-list">
-                        <span class="tech-tag">MSSQL</span>
-                        <span class="tech-tag">Oracle</span>
-                    </div>
+                    <div class="tech-list"><span class="tech-tag">MSSQL</span><span class="tech-tag">Oracle</span></div>
                 </div>
                 <div class="tech-category">
                     <h3>Security</h3>
-                    <div class="tech-list">
-                        <span class="tech-tag">FortiGate</span>
-                        <span class="tech-tag">Active Directory</span>
-                        <span class="tech-tag">Security Policy</span>
-                    </div>
+                    <div class="tech-list"><span class="tech-tag">FortiGate</span><span class="tech-tag">Active Directory</span><span class="tech-tag">Security Policy</span></div>
                 </div>
                 <div class="tech-category">
                     <h3>Automation / CI/CD</h3>
-                    <div class="tech-list">
-                        <span class="tech-tag">GitLab CI</span>
-                        <span class="tech-tag">Jenkins</span>
-                        <span class="tech-tag">RPA (Automation Anywhere)</span>
-                        <span class="tech-tag">Shell Script(Bash)</Script></span> 
-                    </div>
+                    <div class="tech-list"><span class="tech-tag">GitLab CI</span><span class="tech-tag">Jenkins</span><span class="tech-tag">RPA (Automation Anywhere)</span><span class="tech-tag">Shell Script(Bash)</span></div>
                 </div>
                 <div class="tech-category">
                     <h3>Development</h3>
-                    <div class="tech-list">
-                        <span class="tech-tag">Python</span>
-                    </div>
+                    <div class="tech-list"><span class="tech-tag">Python</span></div>
                 </div>
                 <div class="tech-category">
                     <h3>Monitoring</h3>
-                    <div class="tech-list">
-                        <span class="tech-tag">Zabbix</span>
-                        <span class="tech-tag">Grafana</span>
-                    </div>
+                    <div class="tech-list"><span class="tech-tag">Zabbix</span><span class="tech-tag">Grafana</span></div>
                 </div>
             </div>
         </section>
@@ -985,7 +361,7 @@
         <section class="projects">
             <h2 class="section-title">Key Projects</h2>
             <div class="project-timeline">
-                
+
                 <div class="project-item">
                     <div class="project-header">
                         <div class="project-title">O4O 통합 플랫폼 구축</div>
@@ -1004,11 +380,7 @@
                                 <li>실시간 재고 동기화 로직 검증</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">MSSQL</span>
-                            <span class="tech-item">REST API</span>
-                            <span class="tech-item">VMware</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">MSSQL</span><span class="tech-item">REST API</span><span class="tech-item">VMware</span></div>
                         <div class="project-results">
                             <ul>
                                 <li>체크 온라인·매장 재고 통합으로 판매 기회 확대</li>
@@ -1037,12 +409,7 @@
                                 <li>통합 테스트 주도 및 데이터 무결성 검증</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">MSSQL</span>
-                            <span class="tech-item">Migration</span>
-                            <span class="tech-item">VMware</span>
-                            <span class="tech-item">Network</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">MSSQL</span><span class="tech-item">Migration</span><span class="tech-item">VMware</span><span class="tech-item">Network</span></div>
                         <div class="project-results">
                             <ul>
                                 <li>재고 탐색·요청 기능 고도화로 업무 처리 속도 개선</li>
@@ -1069,12 +436,7 @@
                                 <li>인프라 아키텍처 설계 / DB 최적화</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">VMware</span>
-                            <span class="tech-item">Network</span>
-                            <span class="tech-item">MSSQL</span>
-                            <span class="tech-item">Log Server</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">VMware</span><span class="tech-item">Network</span><span class="tech-item">MSSQL</span><span class="tech-item">Log Server</span></div>
                         <div class="project-results">
                             <ul>
                                 <li>실시간 가격 조정으로 마케팅 전략 대응력 강화</li>
@@ -1101,12 +463,7 @@
                                 <li>부적합 항목 개선 글로벌 보안기준 충족 및 심사 통과</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">AD</span>
-                            <span class="tech-item">Fortigate</span>
-                            <span class="tech-item">Backup</span>
-                            <span class="tech-item">LOG</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">AD</span><span class="tech-item">Fortigate</span><span class="tech-item">Backup</span><span class="tech-item">LOG</span></div>
                         <div class="project-results">
                             <ul>
                                 <li>eSIM 제품 취급 자격 확보로 대외 신뢰도 강화</li>
@@ -1133,12 +490,7 @@
                                 <li>소산백업 및 DR 환경 설계·구축, 재해복구 체계 강화</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">Backup</span>
-                            <span class="tech-item">VMware</span>
-                            <span class="tech-item">Fortigate</span>
-                            <span class="tech-item">Migration</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">Backup</span><span class="tech-item">VMware</span><span class="tech-item">Fortigate</span><span class="tech-item">Migration</span></div>
                         <div class="project-results">
                             <ul>
                                 <li>백업·복구 시간을 대폭 단축(67%)</li>
@@ -1165,44 +517,13 @@
                                 <li>Grafana 연동, 실시간 시각화 대시보드 구현</li>
                             </ul>
                         </div>
-                        <div class="project-techs">
-                            <span class="tech-item">Linux</span>
-                            <span class="tech-item">Zabbix</span>
-                            <span class="tech-item">Grafana</span>
-                            <span class="tech-item">SMS</span>
-                            <span class="tech-item">Migration</span>
-                        </div>
+                        <div class="project-techs"><span class="tech-item">Linux</span><span class="tech-item">Zabbix</span><span class="tech-item">Grafana</span><span class="tech-item">SMS</span><span class="tech-item">Migration</span></div>
                         <div class="project-results">
-                            <ul>
-                                <li>실시간 장애 감지·알림 체계 구축 및 시각화 대시보드 인프라 가시성 및 대응 속도 강화</li>
-                            </ul>
+                            <ul><li>실시간 장애 감지·알림 체계 구축 및 시각화 대시보드 인프라 가시성 및 대응 속도 강화</li></ul>
                         </div>
                     </div>
                 </div>
 
-            </div>
-        </section>
-
-        <!-- Certifications Section -->
-        <section class="certifications">
-            <h2 class="section-title">Certifications</h2>
-            <div class="cert-grid">
-                <div class="cert-item">
-                    <div class="cert-name">정보처리산업기사</div>
-                    <div class="cert-date">2020.08.28</div>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-name">리눅스마스터 2급</div>
-                    <div class="cert-date">2020.07.03</div>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-name">네트워크관리자 2급</div>
-                    <div class="cert-date">2019.07.09</div>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-name">SQL개발자</div>
-                    <div class="cert-date">2023.07.07</div>
-                </div>
             </div>
         </section>
 
