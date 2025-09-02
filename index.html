@@ -179,6 +179,39 @@
             right: auto; top: auto;
         }
         }
+
+        /* === MINI WIDGET 1.3x SCALE OVERRIDES === */
+        :root { --srv-scale: 1.3; }
+
+        /* 위젯 자체 크기 업 */
+        #srv-mini{
+        width: calc(250px * var(--srv-scale));
+        height: calc(110px * var(--srv-scale));
+        padding: 10px;          /* 살짝 여유 */
+        overflow: hidden;       /* 내부 절대요소 안전 */
+        }
+
+        /* 헤더 텍스트가 겹치지 않게 여유 더 줌 */
+        .header-content{
+        max-width: calc(100% - 420px); /* (320px -> 420px) */
+        }
+
+        /* 버튼은 작게 */
+        .detail-button{
+        right: 10px; bottom: 10px;
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 10px;
+        border-width: 1px;
+        transform: none;  /* 크기만 줄이고 애니메이션 유지 */
+        }
+
+        /* 모바일에선 높이도 1.3배 */
+        @media (max-width: 980px){
+        #srv-mini{ height: calc(130px * var(--srv-scale)); }
+        }
+
+
     </style>
 </head>
 <body>
@@ -238,27 +271,56 @@
             c.getZr().on('click', openDashboard);
 
             // 차트 옵션
+            // c.setOption({
+            //     backgroundColor: 'transparent',
+            //     grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
+            //     tooltip: {
+            //     trigger: 'axis',
+            //     backgroundColor: 'rgba(0,0,0,.75)',
+            //     borderColor: 'rgba(255,255,255,.2)',
+            //     textStyle: { color: '#fff', fontSize: 11 },
+            //     appendToBody: true,
+            //     extraCssText: 'z-index:2147483647; pointer-events:none;'
+            //     },
+            //     legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.8)', fontSize: 9 }, top: 2, itemWidth: 12, itemHeight: 8 },
+            //     xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
+            //     yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255,255,255,.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } } },
+            //     series: [
+            //     { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
+            //     { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
+            //     { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
+            //     ],
+            //     animation: false
+            // });
             c.setOption({
-                backgroundColor: 'transparent',
-                grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
-                tooltip: {
+            backgroundColor: 'transparent',
+            /* 그래프 여백 줄여서 플롯 영역 확대 */
+            grid: { left: 20, right: 8, top: 12, bottom: 12, containLabel: true },
+            tooltip: {
                 trigger: 'axis',
                 backgroundColor: 'rgba(0,0,0,.75)',
                 borderColor: 'rgba(255,255,255,.2)',
-                textStyle: { color: '#fff', fontSize: 11 },
+                textStyle: { color: '#fff', fontSize: 12 },
                 appendToBody: true,
                 extraCssText: 'z-index:2147483647; pointer-events:none;'
-                },
-                legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.8)', fontSize: 9 }, top: 2, itemWidth: 12, itemHeight: 8 },
-                xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
-                yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255,255,255,.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } } },
-                series: [
-                { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
-                { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
-                { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
-                ],
-                animation: false
+            },
+            /* 레전드 폰트 살짝 키우되 공간 최소화 */
+            legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.85)', fontSize: 10 }, top: 2, itemWidth: 12, itemHeight: 8 },
+            xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
+            yAxis: { type: 'value', min: 0, max: 100,
+                axisLabel: { color: 'rgba(255,255,255,.7)', fontSize: 10 },
+                axisLine: { show: false }, axisTick: { show: false },
+                splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } }
+            },
+            /* 선 굵기 2로 업, 면적 투명도 유지 */
+            series: [
+                { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:2, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
+                { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:2, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
+                { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:2, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
+            ],
+            animation: false
             });
+
 
             // 데이터 로딩(네 코드 그대로 써도 됨) — 마지막에 kickResize
             function toPct(v){ if(v==null||isNaN(v)) return 0; return v<=1?Math.round(v*100):Math.round(v); }
