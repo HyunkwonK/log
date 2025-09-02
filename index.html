@@ -128,49 +128,56 @@
         .status-warn{ background: linear-gradient(135deg, rgba(245,158,11,.7), rgba(217,119,6,.7)); border-color: rgba(245,158,11,.25); }
         .status-bad { background: linear-gradient(135deg, rgba(239,68,68,.7), rgba(220,38,38,.7)); border-color: rgba(239,68,68,.25); }
 
-        /* 차트가 올라올 때 배지를 흐리게 */
+        /* 배지 위로 올릴 때 투명 처리 */
         .status-badge.dim { opacity: .45; pointer-events: none; transition: opacity .15s ease; }
 
         /* 미니 위젯 컨테이너 */
         #srv-mini{
-            position: absolute; /* 헤더 우상단 고정 */
-            top: 80px; right: 50px; width: 250px; height: 110px;
-            z-index: 3; background: rgba(255,255,255,.10);
-            backdrop-filter: blur(8px);
-            border-radius: 12px; border: 1px solid rgba(255,255,255,.20);
-            padding: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.10);
-            cursor: pointer; transition: transform .2s ease, box-shadow .2s ease;
-            will-change: transform, box-shadow; overflow: hidden;
+        position: absolute; /* 헤더 우상단 고정 */
+        top: 80px; right: 50px; width: 250px; height: 110px;
+        z-index: 3;
+        background: rgba(255,255,255,.10);
+        backdrop-filter: blur(8px);
+        border-radius: 12px; border: 1px solid rgba(255,255,255,.20);
+        padding: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.10);
+        cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease;
+        will-change: transform, box-shadow;
+        overflow: hidden; /* 내부 절대배치 요소가 튀지 않게 */
         }
         #srv-mini:hover{ transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.15); }
 
-        /* 차트는 바닥층 */
+        /* 차트: 컨테이너 100% 꽉 채우기 (버튼은 위에서 겹침) */
         #srv-mini-chart{
-            position: absolute; inset: 8px 8px 32px 8px; /* 우하단 버튼 자리 확보 */
-            z-index: 1;
+        position: absolute; inset: 0;   /* top/right/bottom/left 0 */
+        width: 100%; height: 100%;
+        z-index: 1;
+        /* 안전빵: 어떤 브라우저에서도 0으로 안 떨어지게 */
+        min-width: 100%; min-height: 100%;
         }
 
-        /* 우하단 버튼은 차트 위/배지 아래 */
+        /* 우하단 버튼은 차트 위, 배지 아래 */
         .detail-button{
-            position: absolute; right: 15px; bottom: 10px; z-index: 10;
-            font-size: 11px; color: rgba(255,255,255,.85);
-            background: rgba(255,255,255,.12); backdrop-filter: blur(5px);
-            padding: 4px 10px; border-radius: 12px; font-weight: 600;
-            border: 1px solid rgba(255,255,255,.35);
-            cursor: pointer; transition: background .2s ease, color .2s ease, transform .15s ease;
+        position: absolute; right: 8px; bottom: 8px; z-index: 10;
+        font-size: 11px; color: rgba(255,255,255,.85);
+        background: rgba(255,255,255,.12); backdrop-filter: blur(5px);
+        padding: 4px 10px; border-radius: 12px; font-weight: 600;
+        border: 1px solid rgba(255,255,255,.35);
+        cursor: pointer;
+        transition: background .2s ease, color .2s ease, transform .15s ease;
         }
         .detail-button:hover{ background: rgba(255,255,255,.2); color:#fff; transform: translateY(-1px); }
 
-        /* 차트 툴팁은 항상 최상단 */
+        /* ECharts 툴팁은 항상 최상단 */
         #srv-mini .echarts-tooltip, .echarts-tooltip { z-index: 2147483647 !important; pointer-events: none; }
 
-        /* 모바일: relative 스택(절대 static 금지) */
+        /* 모바일: 상대 배치로 스택 (static 절대 쓰지 마) */
         @media (max-width: 980px){
-            #srv-mini{
-                position: relative; width: 100%; height: 130px; margin: 15px 0 0 0;
-                right: auto; top: auto;
-            }
-            .status-badge{ position: static; display: inline-block; margin: 0 0 10px 0; }
+        #srv-mini{
+            position: relative; width: 100%; height: 130px; margin: 15px 0 0 0;
+            right: auto; top: auto;
+        }
         }
     </style>
 </head>
@@ -188,112 +195,117 @@
                 </div>
             </div>
 
-            <!-- 미니 서버 모니터 -->
             <div id="srv-mini">
                 <div id="srv-mini-chart" aria-hidden="true"></div>
                 <span class="detail-button"
-                      onclick="window.open('https://hkk-it.kro.kr/health/dashboard','_blank','noopener,noreferrer')"
-                      aria-label="상세확인">&lt;상세확인&gt;</span>
+                        onclick="window.open('https://hkk-it.kro.kr/health/dashboard','_blank','noopener,noreferrer')"
+                        aria-label="상세확인">&lt;상세확인&gt;</span>
             </div>
             <div id="srv-status" class="status-badge">--</div>
 
+
             <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
             <script>
-                (async function () {
-                  const el    = document.getElementById('srv-mini-chart');
-                  const badge = document.getElementById('srv-status');
-                  const c     = echarts.init(el);
-                  const srvMini = document.getElementById('srv-mini');
+            (async function () {
+            const el    = document.getElementById('srv-mini-chart');
+            const badge = document.getElementById('srv-status');
+            const box   = document.getElementById('srv-mini');
 
-                  // 차트 위에 올리면 배지를 잠시 투명
-                  srvMini.addEventListener('mouseenter', () => badge.classList.add('dim'));
-                  srvMini.addEventListener('mouseleave', () => badge.classList.remove('dim'));
-                  srvMini.addEventListener('touchstart', () => badge.classList.add('dim'), {passive:true});
-                  srvMini.addEventListener('touchend',   () => badge.classList.remove('dim'));
+            // 크기 보장: 컨테이너가 0이 아니게 한번 더 체크
+            function kickResize(c){
+                // 다음 페인트 2틱에 걸쳐 리사이즈 (레이아웃 안정화용)
+                requestAnimationFrame(()=>{ c.resize(); requestAnimationFrame(()=>c.resize()); });
+                // 폰트 로드 후에도 한 번 더
+                if (document.fonts && document.fonts.ready) { document.fonts.ready.then(()=>c.resize()); }
+            }
 
-                  // 대시보드 링크
-                  const TARGET_URL = 'https://hkk-it.kro.kr/health/dashboard';
-                  function openDashboard(){ window.open(TARGET_URL, '_blank', 'noopener,noreferrer'); }
-                  badge.setAttribute('title','대시보드 열기');
-                  badge.setAttribute('role','button');
-                  badge.setAttribute('tabindex','0');
-                  badge.addEventListener('click', openDashboard);
-                  badge.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); openDashboard(); }});
-                  c.getZr().on('click', openDashboard);
+            const c = echarts.init(el);  // 캔버스 렌더러 기본
 
-                  // 차트 옵션
-                  c.setOption({
-                    backgroundColor: 'transparent',
-                    grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
-                    tooltip: {
-                      trigger: 'axis',
-                      backgroundColor: 'rgba(0,0,0,.75)',
-                      borderColor: 'rgba(255,255,255,.2)',
-                      textStyle: { color: '#fff', fontSize: 11 },
-                      appendToBody: true,
-                      extraCssText: 'z-index:2147483647; pointer-events:none;',
-                      position: function (pos, params, dom, rect, size) {
-                        const [x,y] = pos; const viewW = size.viewSize[0]; const tipW = size.contentSize[0];
-                        const nearBadge = (viewW - x < 320) && (y < 140);
-                        return nearBadge ? [x - tipW - 12, y + 12] : [x + 12, y + 12];
-                      }
-                    },
-                    legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.8)', fontSize: 9 }, top: 2, itemWidth: 12, itemHeight: 8 },
-                    xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
-                    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255,255,255,.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } } },
-                    series: [
-                      { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
-                      { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
-                      { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
-                    ],
-                    animation: false
-                  });
+            // 배지 흐림 효과
+            box.addEventListener('mouseenter', () => badge.classList.add('dim'));
+            box.addEventListener('mouseleave', () => badge.classList.remove('dim'));
+            box.addEventListener('touchstart', () => badge.classList.add('dim'), {passive:true});
+            box.addEventListener('touchend',   () => badge.classList.remove('dim'));
 
-                  // 데이터 로딩
-                  function toPct(v){ if(v==null||isNaN(v)) return 0; return v<=1?Math.round(v*100):Math.round(v); }
-                  function classify(v){ if(v.cpu<60 && v.mem<70 && v.disk<80) return 'ok'; if(v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad'; return 'warn'; }
-                  function renderBadge(v){
-                    const cls = classify(v);
-                    const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
-                    const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
-                    badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
-                    badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
-                  }
+            // 대시보드 링크
+            const TARGET_URL = 'https://hkk-it.kro.kr/health/dashboard';
+            function openDashboard(){ window.open(TARGET_URL, '_blank', 'noopener,noreferrer'); }
+            badge.setAttribute('title','대시보드 열기');
+            badge.setAttribute('role','button');
+            badge.setAttribute('tabindex','0');
+            badge.addEventListener('click', openDashboard);
+            badge.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); openDashboard(); }});
+            c.getZr().on('click', openDashboard);
 
-                  async function reload(){
-                    try{
-                      const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
-                      const lines = raw.trim()? raw.trim().split('\n'): [];
-                      const parsed = []; for(const ln of lines){ try{ parsed.push(JSON.parse(ln)); }catch(_){ } }
-                      if(!parsed.length){ badge.className='status-badge'; badge.textContent='데이터 없음'; return; }
+            // 차트 옵션
+            c.setOption({
+                backgroundColor: 'transparent',
+                grid: { left: 25, right: 10, top: 20, bottom: 20, containLabel: true },
+                tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0,0,0,.75)',
+                borderColor: 'rgba(255,255,255,.2)',
+                textStyle: { color: '#fff', fontSize: 11 },
+                appendToBody: true,
+                extraCssText: 'z-index:2147483647; pointer-events:none;'
+                },
+                legend: { data: ['CPU','MEM','DISK'], textStyle: { color: 'rgba(255,255,255,.8)', fontSize: 9 }, top: 2, itemWidth: 12, itemHeight: 8 },
+                xAxis: { type: 'category', data: [], axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false } },
+                yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: 'rgba(255,255,255,.6)', fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle:{ color: 'rgba(255,255,255,.08)' } } },
+                series: [
+                { name:'CPU',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#10b981' }, areaStyle:{ opacity:.25, color:'rgba(16,185,129,.25)' }, data:[] },
+                { name:'MEM',  type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#3b82f6' }, areaStyle:{ opacity:.20, color:'rgba(59,130,246,.20)' }, data:[] },
+                { name:'DISK', type:'line', symbol:'none', lineStyle:{ width:1.5, color:'#f59e0b' }, areaStyle:{ opacity:.15, color:'rgba(245,158,11,.15)' }, data:[] }
+                ],
+                animation: false
+            });
 
-                      const keep = 120; const arr = parsed.slice(-keep);
-                      const labels = arr.map(d => { const t = d.ts? new Date(d.ts): null; return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '' });
-                      const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
-                      const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
-                      const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
+            // 데이터 로딩(네 코드 그대로 써도 됨) — 마지막에 kickResize
+            function toPct(v){ if(v==null||isNaN(v)) return 0; return v<=1?Math.round(v*100):Math.round(v); }
+            function classify(v){ if(v.cpu<60 && v.mem<70 && v.disk<80) return 'ok'; if(v.cpu>=85 || v.mem>=90 || v.disk>=95) return 'bad'; return 'warn'; }
+            function renderBadge(v){
+                const cls = classify(v);
+                const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
+                const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
+                badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
+                badge.textContent = `${icon} ${text} CPU${v.cpu}% MEM${v.mem}% DISK${v.disk}%`;
+            }
 
-                      c.setOption({ xAxis:{ data: labels }, series:[ {data:cpuArr}, {data:memArr}, {data:diskArr} ] });
+            async function reload(){
+                try{
+                const raw = await fetch('data/health-log.jsonl?t='+Date.now(), {cache:'no-store'}).then(r=>r.text());
+                const lines = raw.trim()? raw.trim().split('\n'): [];
+                const parsed = []; for(const ln of lines){ try{ parsed.push(JSON.parse(ln)); }catch(_){ } }
+                if(!parsed.length){ badge.className='status-badge'; badge.textContent='데이터 없음'; return; }
 
-                      const last = { cpu: cpuArr.at(-1) ?? 0, mem: memArr.at(-1) ?? 0, disk: diskArr.at(-1) ?? 0 };
-                      renderBadge(last);
-                    }catch(e){
-                      badge.className = 'status-badge';
-                      badge.textContent = '데이터 로드 실패';
-                    }
-                  }
+                const arr = parsed.slice(-120);
+                const labels = arr.map(d => { const t = d.ts? new Date(d.ts): null; return (t && !isNaN(t)) ? t.toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'}) : '' });
+                const cpuArr  = arr.map(d => toPct(d.cpu  ?? d.cpu_pct  ?? d.cpuUsage  ?? d.cpu_percent));
+                const memArr  = arr.map(d => toPct(d.mem  ?? d.mem_pct  ?? d.memory    ?? d.memory_percent));
+                const diskArr = arr.map(d => toPct(d.disk ?? d.disk_pct ?? d.diskUsage ?? d.disk_percent));
 
-                  await reload();
-                  setInterval(reload, 30000);
+                c.setOption({ xAxis:{ data: labels }, series:[ {data:cpuArr}, {data:memArr}, {data:diskArr} ] });
+                renderBadge({ cpu: cpuArr.at(-1) ?? 0, mem: memArr.at(-1) ?? 0, disk: diskArr.at(-1) ?? 0 });
 
-                  // 레이아웃: 포지션 건드리지 말고 차트만 리사이즈
-                  function applyLayout(){ c.resize(); }
-                  applyLayout();
+                kickResize(c); // <-- 여기서 보정
+                }catch(e){
+                badge.className = 'status-badge';
+                badge.textContent = '데이터 로드 실패';
+                }
+            }
 
-                  let resizeTimer;
-                  addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(applyLayout, 100); });
-                })();
+            await reload();
+            setInterval(reload, 30000);
+
+            // 초기/리사이즈/페이지 복귀 시에도 사이즈 보정
+            function applyLayout(){ kickResize(c); }
+            applyLayout();
+            let resizeTimer;
+            addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(applyLayout, 100); });
+            addEventListener('pageshow', applyLayout); // bfcache 복귀 대비
+            })();
             </script>
+
         </header>
 
         <!-- Summary Section -->
