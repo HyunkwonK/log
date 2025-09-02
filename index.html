@@ -211,6 +211,49 @@
         #srv-mini{ height: calc(130px * var(--srv-scale)); }
         }
 
+        /* === 배지: 항상 #srv-mini 내부 우상단에 고정 (모바일 포함) === */
+        #srv-mini .status-badge{
+        position: absolute;
+        top: 8px; right: 8px;
+        z-index: 12;           /* 차트/버튼 위 */
+        background: linear-gradient(135deg, rgba(16,185,129,0.7), rgba(5,150,105,0.7));
+        border-color: rgba(16,185,129,0.25);
+        padding: 6px 10px;
+        border-radius: 14px;
+        font-size: 12px;
+        line-height: 1;
+        white-space: nowrap;
+        }
+
+        @media (max-width:980px){
+        #srv-mini .status-badge{
+            position: absolute;   /* 계속 고정 */
+            top: 8px; right: 8px;
+        }
+        }
+
+        /* 상세 버튼: 꺾쇠 뺀 상태에서 살짝 작게 */
+        #srv-mini .detail-button{
+        position: absolute;
+        right: 10px; bottom: 10px;
+        z-index: 10;
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,.35);
+        background: rgba(255,255,255,.12);
+        color: rgba(255,255,255,.9);
+        backdrop-filter: blur(5px);
+        transition: background .2s ease, color .2s ease, transform .15s ease;
+        }
+        #srv-mini .detail-button:hover{ background: rgba(255,255,255,.2); color:#fff; transform: translateY(-1px); }
+
+        /* 차트는 컨테이너를 항상 100% 채움 */
+        #srv-mini-chart{
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        z-index: 1;
+        }
 
     </style>
 </head>
@@ -232,9 +275,9 @@
                 <div id="srv-mini-chart" aria-hidden="true"></div>
                 <span class="detail-button"
                         onclick="window.open('https://hkk-it.kro.kr/health/dashboard','_blank','noopener,noreferrer')"
-                        aria-label="상세확인">&lt;상세확인&gt;</span>
+                        aria-label="상세확인">상세확인</span>
+                <div id="srv-status" class="status-badge">--</div>
             </div>
-            <div id="srv-status" class="status-badge">--</div>
 
 
             <script src="https://cdn.jsdelivr.net/npm/echarts@5"></script>
