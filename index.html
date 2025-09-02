@@ -366,6 +366,14 @@
             color: #667eea;
             font-weight: bold;
         }
+
+        .project-description strong {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            color: #059669;
+        }
+        
         
         .project-techs {
             display: flex;
@@ -694,7 +702,7 @@
             srvMini.addEventListener('touchend',   () => badge.classList.remove('dim'));
    
             /* === 1) 대시보드 링크: 초기화 시 1회만 등록 === */
-            const TARGET_URL = 'http://3.219.205.4:7070/health/dashboard';
+            const TARGET_URL = 'https://hkk-it.kro.kr/health/dashboard';
             function openDashboard() {
                 window.open(TARGET_URL, '_blank', 'noopener,noreferrer');
             }
@@ -888,6 +896,10 @@
                     <div class="impact-title">차세대 백업 시스템 구축</div>
                     <div class="impact-result">→ 백업 시간 67% 단축 및 시스템 안정화</div>
                 </div>
+                <div class="impact-item">
+                    <div class="impact-title">CI/CD 자동화 환경 구축</div>
+                    <div class="impact-result">→ 개발 생산성 증대 (Gitlab CI 코드 빌드 및 검증, Jenkins 애플리케이션 자동 배포)</div>
+                </div>
             </div>
         </section>
 
@@ -924,6 +936,7 @@
                         <span class="tech-tag">GitLab CI</span>
                         <span class="tech-tag">Jenkins</span>
                         <span class="tech-tag">RPA (Automation Anywhere)</span>
+                        <span class="tech-tag">Shell Script(Bash)</Script></span> 
                     </div>
                 </div>
                 <div class="tech-category">
