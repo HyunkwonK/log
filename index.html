@@ -666,6 +666,27 @@
             margin-bottom: 2px;
             text-align: center;
             }
+            /* 상세보기 */
+            .detail-button {
+                position: absolute;
+                bottom: 10px;
+                right: 15px;
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.7);
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(5px);
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.2s ease, color 0.2s ease;
+                z-index: 5;
+            }
+            .detail-button:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+
         </style>
 
         <div class="header-content">
@@ -682,6 +703,7 @@
 
         <div id="srv-mini">
             <div class="chart-mini-title">Server Monitor</div>
+            <span class="detail-button" onclick="window.open('https://hkk-it.kro.kr/health/dashboard', '_blank')">상세보기</span>
         </div>
         <div id="srv-status" class="status-badge">--</div>
 
