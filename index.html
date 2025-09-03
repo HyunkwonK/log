@@ -795,7 +795,7 @@
                 const icon = cls==='ok'?'●':cls==='warn'?'⚠':'●';
                 const text = cls==='ok'?'정상':cls==='warn'?'주의':'위험';
                 badge.className = 'status-badge ' + (cls==='ok'?'status-ok':cls==='warn'?'status-warn':'status-bad');
-                badge.textContent = `${icon} ${text} CPU ${v.cpu}% MEM ${v.mem}% DISK ${v.disk}%`;
+                badge.textContent = `${icon} ${text} CPU${v.cpu} % MEM${v.mem} % DISK${v.disk} %`;
             }
 
             async function reload(){
