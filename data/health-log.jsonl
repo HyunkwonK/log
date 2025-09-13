@@ -555,3 +555,5 @@
 {"ts": "2025-09-13T00:25:01Z", "icon": "sunny", "cpu": 0.0, "mem": 46.3, "disk": 42.9, "load": 0.0, "svc": true}
 {"ts": "2025-09-13T01:25:02Z", "icon": "sunny", "cpu": 1.6, "mem": 45.9, "disk": 42.9, "load": 0.0, "svc": true}
 {"ts": "2025-09-13T01:25:02Z", "icon": "sunny", "cpu": 1.6, "mem": 45.9, "disk": 42.9, "load": 0.0, "svc": true}
+{"ts": "2025-09-13T02:25:02Z", "icon": "sunny", "cpu": 0.0, "mem": 45.9, "disk": 42.9, "load": 0.0, "svc": true}
+{"ts": "2025-09-13T02:25:02Z", "icon": "sunny", "cpu": 0.0, "mem": 45.9, "disk": 42.9, "load": 0.0, "svc": true}
