@@ -2333,3 +2333,5 @@
 {"ts": "2025-10-20T00:01:59Z", "icon": "sunny", "cpu": 0.0, "mem": 47.6, "disk": 44.2, "load": 0.0, "svc": true}
 {"ts": "2025-10-20T01:02:00Z", "icon": "sunny", "cpu": 1.6, "mem": 48.6, "disk": 44.2, "load": 0.0, "svc": true}
 {"ts": "2025-10-20T01:02:00Z", "icon": "sunny", "cpu": 1.6, "mem": 48.6, "disk": 44.2, "load": 0.0, "svc": true}
+{"ts": "2025-10-20T02:02:00Z", "icon": "sunny", "cpu": 0.0, "mem": 48.4, "disk": 44.2, "load": 0.01, "svc": true}
+{"ts": "2025-10-20T02:02:00Z", "icon": "sunny", "cpu": 0.0, "mem": 48.4, "disk": 44.2, "load": 0.01, "svc": true}
