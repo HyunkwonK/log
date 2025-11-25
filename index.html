@@ -647,6 +647,41 @@
                 max-width: 100%;
             }
         }
+
+        /* 클릭 가능한 항목 인터랙션 */
+        .impact-item.js-scroll {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+
+        .impact-item.js-scroll:hover {
+            transform: translateY(-5px);
+            background-color: #f1f5f9; /* 아주 연한 회색 */
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        /* 이동 후 타겟 강조 애니메이션 */
+        /* @keyframes highlight-flash {
+            0% { background-color: rgba(102, 126, 234, 0.2); }
+            100% { background-color: transparent; }
+        } */
+         /* --- [수정] 이동 후 타겟 강조 애니메이션 (깜빡깜빡 효과) --- */
+        @keyframes flash-highlight {
+            0%   { background-color: #f8fafc; box-shadow: 0 0 0 rgba(0,0,0,0); transform: scale(1); }
+            25%  { background-color: #e0e7ff; box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); transform: scale(1.02); }
+            50%  { background-color: #f8fafc; box-shadow: 0 0 0 rgba(0,0,0,0); transform: scale(1); }
+            75%  { background-color: #e0e7ff; box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); transform: scale(1.02); }
+            100% { background-color: #f8fafc; box-shadow: 0 0 0 rgba(0,0,0,0); transform: scale(1); }
+        }
+
+        /* 스크립트에서 이 클래스를 붙여서 애니메이션을 실행합니다 */
+        .blink-active {
+            animation: flash-highlight 1.2s ease-in-out;
+            border-color: #667eea !important; /* 깜빡이는 동안 테두리도 보라색으로 강조 */
+            z-index: 10; /* 다른 요소보다 위에 보이게 */
+        }
+
     </style>
 </head>
 <body>
@@ -944,6 +979,68 @@
                 resizeTimer = setTimeout(applyLayout, 100);
             });
             })();
+
+        </script>
+        <!-- <script>
+            // 스크롤 이동 기능
+            document.addEventListener('DOMContentLoaded', function() {
+                const scrollTriggers = document.querySelectorAll('.js-scroll');
+
+                scrollTriggers.forEach(trigger => {
+                    trigger.addEventListener('click', function() {
+                        const targetId = this.getAttribute('data-target');
+                        const targetElement = document.getElementById(targetId);
+
+                        if (targetElement) {
+                            // 1. 부드럽게 이동 (화면 중앙에 오도록)
+                            targetElement.scrollIntoView({ 
+                                behavior: 'smooth',
+                                block: 'center' 
+                            });
+                            
+                            // 2. 도착 후 잠깐 반짝이는 효과 (CSS animation)
+                            // 애니메이션 리셋을 위해 클래스 제거 후 다시 추가하는 방식
+                            targetElement.style.animation = 'none';
+                            targetElement.offsetHeight; /* trigger reflow */
+                            targetElement.style.animation = 'highlight-flash 1.5s ease';
+                        }
+                    });
+                });
+            });
+        </script> -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const scrollTriggers = document.querySelectorAll('.js-scroll');
+
+                scrollTriggers.forEach(trigger => {
+                    trigger.addEventListener('click', function() {
+                        const targetId = this.getAttribute('data-target');
+                        const targetElement = document.getElementById(targetId);
+
+                        if (targetElement) {
+                            // 1. 먼저 스크롤 이동 시작
+                            targetElement.scrollIntoView({ 
+                                behavior: 'smooth',
+                                block: 'center' 
+                            });
+                            
+                            // 기존에 깜빡이던 게 있다면 끄기 (연타 방지)
+                            targetElement.classList.remove('blink-active');
+
+                            // 2. [핵심] 700ms(0.7초) 기다렸다가 깜빡임 시작
+                            // 거리가 멀어서 이동 시간이 걸리는 것을 계산해 타이밍을 늦춥니다.
+                            setTimeout(() => {
+                                targetElement.classList.add('blink-active');
+                            }, 700); // 0.7초 대기 (이 숫자를 늘리면 더 늦게 시작합니다)
+
+                            // 3. 애니메이션이 끝나면(총 2초 뒤) 클래스 제거해서 원상복구
+                            setTimeout(() => {
+                                targetElement.classList.remove('blink-active');
+                            }, 2500); // 0.7초 대기 + 1.2초 애니메이션 + 여유시간
+                        }
+                    });
+                });
+            });
         </script>
         </header>
 
@@ -971,15 +1068,15 @@
                 <!-- 기획 카테고리 -->
                 <div class="category-column">
                     <h3 class="category-title">기획</h3>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-o4o">
                         <div class="impact-title">O4O 재고통합 플랫폼 구축</div>
                         <div class="impact-result">→ 330개 매장 온·오프라인 재고 통합,<br>연매출 57억 증가</div>
                     </div>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-app">
                         <div class="impact-title">사내 직원 APP 차세대 프로젝트</div>
                         <div class="impact-result">→ 일 2,100명 사용 앱 마이그레이션,<br> 신규 기능 기획</div>
                     </div>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-esl">
                         <div class="impact-title">매장 전자가격표시기 시스템 구축</div>
                         <div class="impact-result">→ 실시간 가격 변경체계 인프라 기획 및 구축</div>
                     </div>
@@ -988,15 +1085,15 @@
                 <!-- 운영 카테고리 -->
                 <div class="category-column">
                     <h3 class="category-title">운영</h3>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-rpa">
                         <div class="impact-title">RPA 업무 자동화 구축 및 운영</div>
                         <div class="impact-result">→ 10개 프로세스 자동화,<br>월 1,000건 수작업 제거</div>
                     </div>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-infra">
                         <div class="impact-title">인프라 통합 모니터링 시스템 구축</div>
                         <div class="impact-result">→ 서버·네트워크 장비 200대 통합 모니터링<br> 체계 구축</div>
                     </div>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-infra">
                         <div class="impact-title">CI/CD 자동화 환경 구축</div>
                         <div class="impact-result">→ 배포시간 95% 단축 <br>(빌드/검증/Jenkins 자동배포)</div>
                     </div>
@@ -1005,16 +1102,15 @@
                 <!-- 보안 카테고리 -->
                 <div class="category-column">
                     <h3 class="category-title">보안</h3>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-sas">
                         <div class="impact-title">국제 통신보안심사(SAS-UP) 2회 통과</div>
                         <div class="impact-result">→ 국제 보안 표준 100% 충족,<br>서비스 신뢰성 강화</div>
                     </div>
-                    <div class="impact-item">
+                    <div class="impact-item js-scroll" data-target="project-backup">
                         <div class="impact-title">차세대 백업 & DR 시스템 구축</div>
                         <div class="impact-result">→ 백업 67% 단축, RPO 1일 → 1시간 개선</div>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -1082,7 +1178,7 @@
             <h2 class="section-title">Key Projects</h2>
             <div class="project-timeline">
                 
-                <div class="project-item">
+                <div class="project-item" id="project-rpa">
                     <div class="project-header">
                         <div class="project-title">RPA 업무 자동화 구축 및 운영</div>
                         <div class="project-meta">
@@ -1114,7 +1210,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-o4o">
                     <div class="project-header">
                         <div class="project-title">O4O 재고통합 플랫폼 구축</div>
                         <div class="project-meta">
@@ -1148,7 +1244,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-app">
                     <div class="project-header">
                         <div class="project-title">사내 직원 APP 차세대 프로젝트</div>
                         <div class="project-meta">
@@ -1183,7 +1279,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-esl">
                     <div class="project-header">
                         <div class="project-title">전자가격표 인프라 기획, 구축</div>
                         <div class="project-meta">
@@ -1217,7 +1313,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-sas">
                     <div class="project-header">
                         <div class="project-title">GSMA SAS-UP 보안심사</div>
                         <div class="project-meta">
@@ -1250,7 +1346,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-backup">
                     <div class="project-header">
                         <div class="project-title">차세대 백업 & DR 구축</div>
                         <div class="project-meta">
@@ -1284,7 +1380,7 @@
                     </div>
                 </div>
 
-                <div class="project-item">
+                <div class="project-item" id="project-infra">
                     <div class="project-header">
                         <div class="project-title">인프라 통합관리 시스템 구축</div>
                         <div class="project-meta">
