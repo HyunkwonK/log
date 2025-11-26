@@ -361,7 +361,18 @@
             border: 3px solid white;
             box-shadow: 0 0 0 3px #667eea;
         }
-        
+        /* [추가] ABC마트용 주황색 동그라미 */
+        .project-item.item-abc::before {
+            background: #ff6b35; /* badge-abc의 주황색 */
+            box-shadow: 0 0 0 3px #ff6b35;
+        }
+
+        /* [추가] 두산테스나용 하늘색 동그라미 */
+        .project-item.item-doosan::before {
+            background: #4facfe; /* badge-doosan의 하늘색 */
+            box-shadow: 0 0 0 3px #4facfe;
+        }
+
         .project-header {
             margin-bottom: 20px;
         }
@@ -1226,7 +1237,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-rpa">
+                <div class="project-item item-abc" id="project-rpa">
                     <div class="project-header">
                         <div class="project-title">RPA 업무 자동화 구축 및 운영</div>
                         <div class="project-meta">
@@ -1258,7 +1269,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-o4o">
+                <div class="project-item item-abc" id="project-o4o">
                     <div class="project-header">
                         <div class="project-title">O4O 재고통합 플랫폼 구축</div>
                         <div class="project-meta">
@@ -1292,7 +1303,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-app">
+                <div class="project-item item-abc" id="project-app">
                     <div class="project-header">
                         <div class="project-title">사내 직원 APP 차세대 프로젝트</div>
                         <div class="project-meta">
@@ -1327,7 +1338,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-esl">
+                <div class="project-item item-abc" id="project-esl">
                     <div class="project-header">
                         <div class="project-title">전자가격표 인프라 기획, 구축</div>
                         <div class="project-meta">
@@ -1361,7 +1372,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-sas">
+                <div class="project-item item-doosan" id="project-sas">
                     <div class="project-header">
                         <div class="project-title">GSMA SAS-UP 보안심사</div>
                         <div class="project-meta">
@@ -1394,7 +1405,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-backup">
+                <div class="project-item item-doosan" id="project-backup">
                     <div class="project-header">
                         <div class="project-title">차세대 백업 & DR 구축</div>
                         <div class="project-meta">
@@ -1428,7 +1439,7 @@
                     </div>
                 </div>
 
-                <div class="project-item" id="project-infra">
+                <div class="project-item item-doosan" id="project-infra">
                     <div class="project-header">
                         <div class="project-title">인프라 통합관리 시스템 구축</div>
                         <div class="project-meta">
@@ -1438,7 +1449,7 @@
                     </div>
                     <div class="project-content">
                         <div class="project-description">
-                            <strong>1. Zabbix 서버 모니터링 시스템 구축 및 고도화</strong>
+                            <strong>Zabbix 서버 모니터링 시스템 구축 및 고도화</strong>
                             <ul>
                                 <li>네트워크/서버 모니터링 템플릿 설계 구축</li>
                                 <li>서버 상태 및 Process 실시간 모니터링 시스템 구성</li>
@@ -1446,13 +1457,13 @@
                                 <li>Grafana 연동, 실시간 시각화 대시보드 구현</li>
                             </ul>
                             <br>
-                            <strong>2. CI/CD 자동화 파이프라인 구축</strong>
+                            <strong>CI/CD 자동화 파이프라인 구축</strong>
                             <ul>
                                 <li>Gitlab CI 기반 코드 빌드/검증 자동화 환경 구축</li>
                                 <li>Jenkins 기반 애플리케이션 무중단 배포 자동화 구현</li>
                             </ul>
                             <br>
-                            <strong>3. 신규 사옥 네트워크 인프라 설계/구축</strong>
+                            <strong>신규 사옥 네트워크 인프라 설계/구축</strong>
                             <ul>
                                 <li>L2 스위치 기반 VLAN 분할 및 IP 대역 설계/포설</li>
                             </ul>
