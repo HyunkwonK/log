@@ -1,5 +1,3 @@
-{"ts": "2025-10-19T21:01:58Z", "icon": "sunny", "cpu": 0.0, "mem": 48.2, "disk": 44.2, "load": 0.0, "svc": true}
-{"ts": "2025-10-19T21:01:58Z", "icon": "sunny", "cpu": 0.0, "mem": 48.2, "disk": 44.2, "load": 0.0, "svc": true}
 {"ts": "2025-10-19T22:01:59Z", "icon": "sunny", "cpu": 0.0, "mem": 48.6, "disk": 44.2, "load": 0.0, "svc": true}
 {"ts": "2025-10-19T22:01:59Z", "icon": "sunny", "cpu": 0.0, "mem": 48.6, "disk": 44.2, "load": 0.0, "svc": true}
 {"ts": "2025-10-19T23:01:59Z", "icon": "sunny", "cpu": 0.0, "mem": 47.5, "disk": 44.2, "load": 0.0, "svc": true}
@@ -2998,3 +2996,5 @@
 {"ts": "2025-12-21T06:56:17Z", "icon": "sunny", "cpu": 0.0, "mem": 45.8, "disk": 49.6, "load": 0.0, "svc": true}
 {"ts": "2025-12-21T07:56:17Z", "icon": "sunny", "cpu": 0.0, "mem": 46.4, "disk": 49.6, "load": 0.0, "svc": true}
 {"ts": "2025-12-21T07:56:17Z", "icon": "sunny", "cpu": 0.0, "mem": 46.4, "disk": 49.6, "load": 0.0, "svc": true}
+{"ts": "2025-12-21T08:56:17Z", "icon": "sunny", "cpu": 0.0, "mem": 49.6, "disk": 49.6, "load": 0.0, "svc": true}
+{"ts": "2025-12-21T08:56:17Z", "icon": "sunny", "cpu": 0.0, "mem": 49.6, "disk": 49.6, "load": 0.0, "svc": true}
